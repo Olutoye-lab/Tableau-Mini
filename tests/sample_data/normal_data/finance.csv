@@ -1,0 +1,101 @@
+Employee_ID,Name,Job_Title,Sector_Focus,Years_Experience,Annual_Salary,Performance_Rating
+FA-1001,James Smith,Junior Analyst,Technology,2,65000,3.8
+FA-1002,Maria Garcia,Senior Analyst,Healthcare,8,115000,4.5
+FA-1003,Robert Johnson,Investment Analyst,Energy,5,92000,4.1
+FA-1004,Jennifer Williams,Risk Analyst,Finance,4,88000,3.9
+FA-1005,Michael Brown,Portfolio Manager,Consumer Goods,12,150000,4.8
+FA-1006,David Jones,Junior Analyst,Industrials,1,62000,3.5
+FA-1007,Elizabeth Miller,Senior Analyst,Technology,9,118000,4.6
+FA-1008,William Davis,Quant Analyst,Finance,6,105000,4.3
+FA-1009,Barbara Rodriguez,Equity Analyst,Real Estate,7,98000,4.0
+FA-1010,Richard Martinez,FP&A Manager,Retail,10,130000,4.4
+FA-1011,Joseph Hernandez,Junior Analyst,Utilities,2,66000,3.7
+FA-1012,Susan Lopez,Senior Analyst,Healthcare,7,112000,4.2
+FA-1013,Thomas Gonzalez,Investment Analyst,Technology,5,94000,4.5
+FA-1014,Sarah Wilson,Risk Analyst,Finance,3,85000,3.8
+FA-1015,Charles Anderson,Portfolio Manager,Energy,15,165000,4.9
+FA-1016,Karen Thomas,Junior Analyst,Consumer Goods,1,63000,3.6
+FA-1017,Christopher Taylor,Senior Analyst,Industrials,8,114000,4.1
+FA-1018,Nancy Moore,Quant Analyst,Finance,5,102000,4.4
+FA-1019,Daniel Jackson,Equity Analyst,Materials,6,96000,3.9
+FA-1020,Lisa Martin,FP&A Analyst,Telecom,4,82000,4.0
+FA-1021,Matthew Lee,Junior Analyst,Technology,2,67000,3.8
+FA-1022,Betty Perez,Senior Analyst,Real Estate,9,117000,4.3
+FA-1023,Anthony Thompson,Investment Analyst,Healthcare,6,99000,4.2
+FA-1024,Margaret White,Risk Analyst,Finance,4,89000,4.0
+FA-1025,Mark Harris,Portfolio Manager,Technology,13,155000,4.7
+FA-1026,Sandra Sanchez,Junior Analyst,Utilities,1,61000,3.4
+FA-1027,Donald Clark,Senior Analyst,Energy,7,110000,4.1
+FA-1028,Ashley Ramirez,Quant Analyst,Finance,5,104000,4.5
+FA-1029,Steven Lewis,Equity Analyst,Consumer Goods,8,100000,4.2
+FA-1030,Kimberly Robinson,FP&A Manager,Industrials,11,135000,4.6
+FA-1031,Paul Walker,Junior Analyst,Retail,2,64000,3.7
+FA-1032,Emily Young,Senior Analyst,Technology,8,116000,4.4
+FA-1033,Andrew Allen,Investment Analyst,Finance,5,93000,4.0
+FA-1034,Donna King,Risk Analyst,Insurance,3,86000,3.9
+FA-1035,Joshua Wright,Portfolio Manager,Healthcare,14,160000,4.8
+FA-1036,Michelle Scott,Junior Analyst,Energy,1,62500,3.6
+FA-1037,Kenneth Torres,Senior Analyst,Materials,9,119000,4.3
+FA-1038,Carol Nguyen,Quant Analyst,Finance,6,108000,4.6
+FA-1039,Kevin Hill,Equity Analyst,Technology,7,97000,4.1
+FA-1040,Amanda Flores,FP&A Analyst,Telecom,4,83000,3.8
+FA-1041,Brian Green,Junior Analyst,Consumer Goods,2,65500,3.9
+FA-1042,Melissa Adams,Senior Analyst,Utilities,7,111000,4.0
+FA-1043,George Nelson,Investment Analyst,Real Estate,6,95000,4.2
+FA-1044,Deborah Baker,Risk Analyst,Finance,4,87000,3.7
+FA-1045,Ronald Hall,Portfolio Manager,Industrials,12,152000,4.5
+FA-1046,Stephanie Rivera,Junior Analyst,Healthcare,1,61500,3.5
+FA-1047,Edward Campbell,Senior Analyst,Technology,10,122000,4.7
+FA-1048,Rebecca Mitchell,Quant Analyst,Finance,5,103000,4.3
+FA-1049,Jason Carter,Equity Analyst,Energy,8,101000,4.1
+FA-1050,Laura Roberts,FP&A Manager,Retail,11,132000,4.4
+FA-1051,Jeffrey Phillips,Junior Analyst,Finance,2,66500,3.8
+FA-1052,Sharon Evans,Senior Analyst,Consumer Goods,9,115500,4.2
+FA-1053,Ryan Turner,Investment Analyst,Telecom,5,92500,4.0
+FA-1054,Cynthia Diaz,Risk Analyst,Technology,3,84000,3.6
+FA-1055,Jacob Parker,Portfolio Manager,Finance,16,170000,4.9
+FA-1056,Kathleen Cruz,Junior Analyst,Industrials,1,63500,3.7
+FA-1057,Gary Edwards,Senior Analyst,Healthcare,8,113000,4.3
+FA-1058,Amy Collins,Quant Analyst,Finance,6,106000,4.5
+FA-1059,Nicholas Reyes,Equity Analyst,Utilities,7,96500,3.9
+FA-1060,Shirley Stewart,FP&A Analyst,Materials,4,81000,3.8
+FA-1061,Eric Morris,Junior Analyst,Technology,2,67500,3.9
+FA-1062,Angela Morales,Senior Analyst,Real Estate,7,112500,4.1
+FA-1063,Stephen Murphy,Investment Analyst,Energy,6,98500,4.4
+FA-1064,Helen Cook,Risk Analyst,Finance,4,88500,4.0
+FA-1065,Larry Rogers,Portfolio Manager,Retail,13,158000,4.6
+FA-1066,Brenda Gutierrez,Junior Analyst,Consumer Goods,1,60500,3.4
+FA-1067,Scott Ortiz,Senior Analyst,Technology,9,120000,4.5
+FA-1068,Pamela Morgan,Quant Analyst,Finance,5,101500,4.2
+FA-1069,Frank Cooper,Equity Analyst,Healthcare,8,99500,4.1
+FA-1070,Nicole Peterson,FP&A Manager,Finance,10,128000,4.3
+FA-1071,Justin Bailey,Junior Analyst,Telecom,2,64500,3.7
+FA-1072,Samantha Reed,Senior Analyst,Industrials,8,114500,4.2
+FA-1073,Brandon Kelly,Investment Analyst,Materials,5,93500,4.0
+FA-1074,Katherine Howard,Risk Analyst,Finance,3,85500,3.8
+FA-1075,Raymond Ramos,Portfolio Manager,Energy,15,162000,4.8
+FA-1076,Christine Kim,Junior Analyst,Utilities,1,62000,3.6
+FA-1077,Gregory Cox,Senior Analyst,Technology,7,110500,4.1
+FA-1078,Debra Ward,Quant Analyst,Finance,6,107000,4.4
+FA-1079,Benjamin Richardson,Equity Analyst,Consumer Goods,7,97500,4.0
+FA-1080,Rachel Watson,FP&A Analyst,Real Estate,4,82500,3.9
+FA-1081,Samuel Brooks,Junior Analyst,Healthcare,2,66000,3.8
+FA-1082,Carolyn Chavez,Senior Analyst,Finance,9,118500,4.5
+FA-1083,Patrick Wood,Investment Analyst,Retail,6,95500,4.2
+FA-1084,Janet James,Risk Analyst,Technology,4,89500,4.1
+FA-1085,Alexander Bennett,Portfolio Manager,Finance,12,153000,4.6
+FA-1086,Maria Gray,Junior Analyst,Energy,1,61000,3.5
+FA-1087,Jack Mendoza,Senior Analyst,Telecom,8,113500,4.2
+FA-1088,Heather Ruiz,Quant Analyst,Finance,5,102500,4.3
+FA-1089,Dennis Hughes,Equity Analyst,Industrials,8,100500,4.1
+FA-1090,Diane Price,FP&A Manager,Consumer Goods,11,133000,4.5
+FA-1091,Jerry Alvarez,Junior Analyst,Technology,2,67000,3.9
+FA-1092,Julie Castillo,Senior Analyst,Utilities,7,111500,4.0
+FA-1093,Tyler Sanders,Investment Analyst,Healthcare,5,94500,4.3
+FA-1094,Joyce Patel,Risk Analyst,Finance,3,86500,3.7
+FA-1095,Aaron Myers,Portfolio Manager,Real Estate,14,159000,4.7
+FA-1096,Victoria Long,Junior Analyst,Materials,1,63000,3.6
+FA-1097,Jose Ross,Senior Analyst,Energy,10,121000,4.4
+FA-1098,Kelly Foster,Quant Analyst,Finance,6,105500,4.5
+FA-1099,Adam Jimenez,Equity Analyst,Technology,7,98000,4.0
+FA-1100,Christina Powell,FP&A Analyst,Retail,4,83500,3.9
