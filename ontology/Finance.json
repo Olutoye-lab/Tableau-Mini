@@ -1,0 +1,25 @@
+{
+    "description": "A unified schema for General Ledger operations, merging Accounts Payable, Receivable, and Budgeting. Designed to standardize dates, monetary values across currencies, and entity resolutions for precise quarterly reporting.",
+    "required_fields": [
+        ["GL_Account_Code", 3.0],    
+        ["Net_Amount", 3.0],        
+        ["Fiscal_Period", 3.0],
+        ["Subsidiary_Entity", 3.0],
+        ["Gross_Amount", 2.5],      
+        ["Transaction_Date", 2.5],   
+        ["Cost_Center", 2.5],        
+        ["Tax_Amount", 2.5],         
+        ["Currency_Code", 2.0],      
+        ["Approval_Status", 2.0],    
+        ["Vendor_Name", 1.5],        
+        ["Customer_Name", 1.5],      
+        ["Transaction_ID", 1.5],     
+        ["Exchange_Rate", 1.5],      
+        ["Invoice_Number", 1.5],
+        ["Expense_Category", 1.0],
+        ["PO_Reference", 1.0],       
+        ["Description", 0.5],        
+        ["Created_By", 0.5],        
+        ["Payment_Method", 0.5]    
+]
+}

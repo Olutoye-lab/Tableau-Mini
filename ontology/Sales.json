@@ -1,0 +1,25 @@
+{
+    "description": "A comprehensive schema for tracking the customer lifecycle from lead acquisition to closed revenue. This standard harmonizes pipeline stages, product attribution, and territory definitions to ensure accurate forecasting and sales performance analysis.",
+    "required_fields": [
+        ["Opportunity_ID", 2.0],
+        ["Account_Name", 3.0],
+        ["Primary_Contact", 2.5],
+        ["Lead_Source", 1.5],
+        ["Sales_Stage", 3.0],
+        ["Probability_Percent", 2.5],
+        ["Close_Date", 3.0],
+        ["Product_SKU", 1.5],
+        ["Product_Category", 2.0],
+        ["Quantity", 1.5],
+        ["Unit_Price", 1.5],
+        ["Total_Contract_Value", 3.0],
+        ["Annual_Recurring_Revenue", 3.0],
+        ["Currency_Code", 1.0],
+        ["Sales_Rep_ID", 2.5],
+        ["Sales_Territory", 2.0],
+        ["Region", 2.0],
+        ["Competitor_Name", 1.0],
+        ["Deal_Type", 1.5],
+        ["Next_Step", 2.0]
+]
+}

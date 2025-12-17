@@ -1,0 +1,25 @@
+{
+    "description": "The central definition for the employee lifecycle, covering recruitment, compensation, and retention. It standardizes job architecture, demographic data for diversity reporting, and compensation structures to enable precise headcount and payroll analytics.",
+    "required_fields": [
+        ["Employee_ID", 3.0],
+        ["Full_Name", 2.5],
+        ["Job_Title", 2.0],
+        ["Job_Level", 2.5],
+        ["Department", 2.5],
+        ["Cost_Center", 3.0],
+        ["Manager_ID", 2.0],
+        ["Employment_Type", 2.0],
+        ["Hire_Date", 3.0],
+        ["Termination_Date", 3.0],
+        ["Employment_Status", 3.0],
+        ["Work_Location", 1.5],
+        ["Office_Code", 1.0],
+        ["Base_Salary", 3.0],
+        ["Bonus_Target", 2.0],
+        ["Currency_Code", 1.5],
+        ["Performance_Rating", 2.5],
+        ["Date_of_Birth", 2.5],
+        ["Gender", 1.5],
+        ["Tenure_Years", 1.5]
+    ]
+}
