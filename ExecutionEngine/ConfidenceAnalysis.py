@@ -1,14 +1,16 @@
 # Use a pipeline as a high-level helper
 import pandas as pd
-    
+from sse_manager import event_manager
+
 class WeightedConfidenceCalculator:
-    def __init__(self, df: pd.DataFrame, weights: dict):
+    def __init__(self, user_id, df: pd.DataFrame, weights: dict):
         """
         df: The dataframe to check.
         weights: A dictionary defining importance. 
                  e.g., {'Revenue': 3.0, 'City': 1.0, 'Comments': 0.5}
                  Default weight is 1.0 if not specified.
         """
+        self.user_id = user_id
         self.df = df
         self.weights = weights
         
@@ -17,10 +19,12 @@ class WeightedConfidenceCalculator:
         self.column_scores = {col: 100.0 for col in df.columns}
         self.report_log = []
 
-    def check_nulls(self, column: str):
+    async def check_nulls(self, column: str):
         """
         Rule: Deduct 1 point from THIS COLUMN'S score for every 1% of nulls.
         """
+        await event_manager.publish(self.user_id, event_type="normal", data="Confidence Analysis")
+
         if column not in self.df.columns:
             return
 

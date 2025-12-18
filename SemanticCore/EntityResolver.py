@@ -1,5 +1,5 @@
 from SemanticCore.agentforce_setup import call_agent
-
+from sse_manager import event_manager
 import pandas as pd
 import json
 from dotenv import load_dotenv
@@ -8,16 +8,19 @@ import os
 load_dotenv()
 
 class EntityResolver:
-    def __init__(self):
+    def __init__(self, user_id):
         """
         Initializes the entity resolver which resolves row incosistencies 
         """
+        self.user_id = user_id
         self.resolution_cache = {} # "Memory" to avoid re-resolving known entities
 
     async def resolve(self, series: pd.Series) -> pd.Series:
         """
         Resolves a dirty column to standard entities efficiently.
         """
+        await event_manager.publish(self.user_id, event_type="normal", data="Entity Resolution")
+
         # 1. Input Validation
         if series.empty:
             return series

@@ -1,13 +1,20 @@
 import pandas as pd
 import numpy as np
 from dateutil.parser import parse
+from sse_manager import event_manager
 
 class MetadataScanner:
-    def scan(self, df):
+    def __init__(self, user_id):
+        self.user_id = user_id
+
+
+    async def scan(self, df):
         """
         Input: Raw Pandas DataFrame
         Output: A dictionary 'Profile' summarizing every column.
         """
+        await event_manager.publish(self.user_id, event_type="normal", data="Metadata Scan")
+
         profile = {}
         
         for col in df.columns:

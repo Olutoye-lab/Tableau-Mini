@@ -1,16 +1,19 @@
 import pandas as pd
 from sqlalchemy import create_engine
+from sse_manager import event_manager
 from io import BytesIO, StringIO
 
 class BridgeIngestor:
-    def __init__(self):
+    def __init__(self, user_id):
+        self.user_id = user_id
         self.supported_extensions = ['.csv', '.xlsx', '.json']
 
-    def ingest(self, data_or_conn_string, limit=1, user_table_name=" ", dataType="csv"):
+    async def ingest(self, data_or_conn_string, limit=1, user_table_name=" ", dataType="csv"):
         """
         Main entry point. Detects source type and routes to the correct loader.
         Returns: A normalized Pandas DataFrame.
         """
+        await event_manager.publish(self.user_id, event_type="normal", data="Ingestion")
         # Check if it's a SQL Connection String (simplistic check)
         if dataType == "string":
             print(f"--> Detecting SQL Connection...")

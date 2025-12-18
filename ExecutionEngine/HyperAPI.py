@@ -4,6 +4,8 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
+from sse_manager import event_manager
+
 from tableauhyperapi import (
     HyperProcess, Connection, Telemetry, CreateMode, 
     TableDefinition, SqlType, TableName, escape_string_literal,
@@ -11,7 +13,8 @@ from tableauhyperapi import (
 )
 
 class HyperParquetIngestor:
-    def __init__(self, hyper_file_path: str):
+    def __init__(self, user_id, hyper_file_path: str):
+        self.user_id = user_id
         self.hyper_path = hyper_file_path
 
     def _map_pandas_to_hyper_type(self, dtype) -> SqlType:
@@ -27,7 +30,9 @@ class HyperParquetIngestor:
         else:
             return SqlType.text()
 
-    def generate_file(self, df: pd.DataFrame, table_name: str = "Extract"):
+    async def generate_file(self, df: pd.DataFrame, table_name: str = "Extract"):
+        await event_manager.publish(self.user_id, event_type="normal", data="Creating .hyper File")
+
         # Create a named temporary file that closes automatically but isn't deleted immediately
         # We need it to persist so Hyper can read it, then we delete it manually.
         with tempfile.NamedTemporaryFile(suffix='.parquet', delete=False) as tmp_file:

@@ -1,10 +1,10 @@
 from sentence_transformers import SentenceTransformer
-
+from sse_manager import event_manager
 import pandas as pd
 import faiss
 
 class SemanticMapper:
-    def __init__(self, model_name='all-MiniLM-L6-v2', threshold=0.6):
+    def __init__(self,user_id, model_name='all-MiniLM-L6-v2', threshold=0.6):
         """
         Initializes the Mapper with a lightweight, high-speed embedding model.
         Args:
@@ -12,6 +12,7 @@ class SemanticMapper:
             threshold: The confidence score (0.0 - 1.0) required to auto-map a field.
         """
         print(f"Loading Intelligence Core: {model_name}...")
+        self.user_id = user_id
         self.model = SentenceTransformer(model_name)
         self.index = None  # The FAISS Vector Database
         self.ontology_fields = [] 
@@ -45,6 +46,9 @@ class SemanticMapper:
             }
         }
         """
+
+        await event_manager.publish(self.user_id, event_type="normal", data="Semantics Mapping")
+
         # --- INPUT HANDLING LOGIC ---
         if isinstance(raw_input, pd.DataFrame):
             # If DataFrame, get column names

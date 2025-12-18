@@ -1,18 +1,17 @@
 import tableauserverclient as TSC
 from dotenv import load_dotenv
-import jwt
-import uuid
-import datetime
+from sse_manager import event_manager
 import os
 
 load_dotenv()
 
 class TableauCloudPublisher:
-    def __init__(self, server_url, site_name, token, token_name):
+    def __init__(self, user_id, server_url, site_name, token, token_name):
         """
         Initialize connection details.
         Best Practice: Use Personal Access Tokens (PATs) for scripts, not passwords.
         """
+        self.user_id = user_id
         self.server_url = server_url
         self.auth = TSC.PersonalAccessTokenAuth(
             site_id=site_name,
@@ -47,10 +46,12 @@ class TableauCloudPublisher:
 
     #     return token
 
-    def publish(self, file_path, project_name="Default", datasource_name=None, certify=True):
+    async def publish(self, file_path, project_name="Default", datasource_name=None, certify=True):
         """
         Publishes the .hyper file and optionally marks it as 'Certified'.
         """
+        await event_manager.publish(self.user_id, event_type="normal", data="Publishing")
+
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"Hyper file not found at: {file_path}")
 
