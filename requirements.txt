@@ -2,7 +2,11 @@ fastapi
 uvicorn
 httpx
 pytest
+salesforce-agentforce
+transformers
+tableauserverclient
 tableauhyperapi
+hf_tex
 pandas
 psycopg
 sqlalchemy
