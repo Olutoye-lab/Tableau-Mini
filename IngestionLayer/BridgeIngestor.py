@@ -2,35 +2,49 @@ import pandas as pd
 from sqlalchemy import create_engine
 from sse_manager import event_manager
 from io import BytesIO, StringIO
+from typing import Optional, Any
+import json
+
 
 class BridgeIngestor:
     def __init__(self, user_id):
         self.user_id = user_id
         self.supported_extensions = ['.csv', '.xlsx', '.json']
 
-    async def ingest(self, data_or_conn_string, limit=1, user_table_name=" ", dataType="csv"):
+    def ingest(self, data_or_string, limit: Optional[int]=1, user_table_name: Optional[str]=" ", dataType="csv"):
         """
         Main entry point. Detects source type and routes to the correct loader.
         Returns: A normalized Pandas DataFrame.
         """
-        await event_manager.publish(self.user_id, event_type="normal", data="Ingestion")
         # Check if it's a SQL Connection String (simplistic check)
+        df = None
         if dataType == "string":
             print(f"--> Detecting SQL Connection...")
-            return self._load_sql(data_or_conn_string, user_table_name, limit)
-        
+            df = self._load_sql(data_or_string, user_table_name, limit)
 
-        if dataType == 'csv':
+        elif dataType == 'csv':
             print(f"--> Detecting CSV File...")
-            return self._load_csv(data_or_conn_string)
+            df = self._load_csv(data_or_string)
         elif dataType == 'xlsx':
             print(f"--> Detecting Excel File...")
-            return self._load_excel(data_or_conn_string)
+            df = self._load_excel(data_or_string)
         elif dataType == 'json':
             print(f"--> Detecting JSON File...")
-            return self._load_json(data_or_conn_string)
+            df = self._load_json(data_or_string)
+        
+        if df is not None:
+            event_data: dict[str, Any] ={
+                "id": 0,
+                "title": "Ingestion Data",
+                "text": "This is the initial process which ingests data from your source (either locally or through a connection string) into the pipeline",
+                "table": df.head().to_dict(orient="records")
+            }
+
+            return df, event_data
         else:
-            raise ValueError(f"Unsupported source type: {dataType}")
+            print("DF IS NONE!!")
+            event_data: dict[str, Any] = {}
+            return pd.DataFrame(), event_data
 
     # --- Specific Loaders ---
 

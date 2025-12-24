@@ -1,22 +1,23 @@
 import pandas as pd
-import numpy as np
+import json
 from dateutil.parser import parse
 from sse_manager import event_manager
 
 class MetadataScanner:
     def __init__(self, user_id):
         self.user_id = user_id
+        self.event_data = []
+        self.data_count = 0
 
 
-    async def scan(self, df):
+    def scan(self, df: pd.DataFrame):
         """
         Input: Raw Pandas DataFrame
         Output: A dictionary 'Profile' summarizing every column.
         """
-        await event_manager.publish(self.user_id, event_type="normal", data="Metadata Scan")
-
         profile = {}
-        
+        event_data = {}
+
         for col in df.columns:
             # 1. Global Stats (Calculate on FULL data for accuracy)
             total_rows = len(df)
@@ -45,8 +46,27 @@ class MetadataScanner:
                 },
                 "is_likely_id": unique_count == total_rows
             }
+
+            pf_copy = profile[col]
+
+            pf_copy.update({"completeness": pf_copy['stats']['completeness']})
+            pf_copy.update({"uniqueness": pf_copy['stats']['uniqueness']})
+            pf_copy.update({"column_value": col})
+            del pf_copy["stats"]
+
+            self.event_data.append(pf_copy)
+
+            if self.data_count == 5:
+                event_data ={
+                    "id": 1,
+                    "title": "Metadata Scan",
+                    "text": "A current scan of the data provided has indicated various semantics data statistics.",
+                    "table": self.event_data
+                }
+
+            self.data_count += 1
             
-        return profile
+        return profile, event_data
 
     def _determine_type_and_tag(self, series, unique_ratio, null_ratio):
         """

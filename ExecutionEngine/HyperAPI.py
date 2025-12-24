@@ -30,8 +30,7 @@ class HyperParquetIngestor:
         else:
             return SqlType.text()
 
-    async def generate_file(self, df: pd.DataFrame, table_name: str = "Extract"):
-        await event_manager.publish(self.user_id, event_type="normal", data="Creating .hyper File")
+    def generate_file(self, df: pd.DataFrame, table_name: str = "Extract"):
 
         # Create a named temporary file that closes automatically but isn't deleted immediately
         # We need it to persist so Hyper can read it, then we delete it manually.

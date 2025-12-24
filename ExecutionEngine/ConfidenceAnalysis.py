@@ -1,6 +1,5 @@
 # Use a pipeline as a high-level helper
 import pandas as pd
-from sse_manager import event_manager
 
 class WeightedConfidenceCalculator:
     def __init__(self, user_id, df: pd.DataFrame, weights: dict):
@@ -19,11 +18,10 @@ class WeightedConfidenceCalculator:
         self.column_scores = {col: 100.0 for col in df.columns}
         self.report_log = []
 
-    async def check_nulls(self, column: str):
+    def check_nulls(self, column: str):
         """
         Rule: Deduct 1 point from THIS COLUMN'S score for every 1% of nulls.
         """
-        await event_manager.publish(self.user_id, event_type="normal", data="Confidence Analysis")
 
         if column not in self.df.columns:
             return
@@ -49,7 +47,7 @@ class WeightedConfidenceCalculator:
         # If it's just a normal column (like Region or Customer_ID), skip the check.
         if not is_primary_key:
             self.report_log.append(f"[{column}] Skipped uniqueness check (Duplicates allowed).")
-            return
+            return 
 
         # If it IS the Primary Key, duplicates are a disaster.
         if not self.df[column].is_unique:

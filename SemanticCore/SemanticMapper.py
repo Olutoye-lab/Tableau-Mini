@@ -2,6 +2,8 @@ from sentence_transformers import SentenceTransformer
 from sse_manager import event_manager
 import pandas as pd
 import faiss
+import json
+
 
 class SemanticMapper:
     def __init__(self,user_id, model_name='all-MiniLM-L6-v2', threshold=0.6):
@@ -33,7 +35,7 @@ class SemanticMapper:
         self.index.add(ontology_embeddings) # type: ignore
         print("Ontology vectorized and indexed successfully.")
 
-    async def map_columns(self, raw_input):
+    def map_columns(self, raw_input):
         """
         Maps columns to the precomputed ontology fields.
         Input: List, Pandas Series, or Pandas DataFrame.
@@ -46,9 +48,6 @@ class SemanticMapper:
             }
         }
         """
-
-        await event_manager.publish(self.user_id, event_type="normal", data="Semantics Mapping")
-
         # --- INPUT HANDLING LOGIC ---
         if isinstance(raw_input, pd.DataFrame):
             # If DataFrame, get column names
@@ -93,6 +92,22 @@ class SemanticMapper:
                     "suggestion": matched_ontology_field,
                     "status": "UNMAPPED"
                 }
+        
+        jsn = []
+        for key, value in mapping_result.items():
+            dct = {"column_name": key}
+            dct.update(value)
+            jsn.append(dct)
+
+            if len(jsn) == 5:
+                break
+
+        event_data ={
+            "id": 3,
+            "title": "Semantic Mapping",
+            "text": "Utilizing vector embeddings, fields have now been semantically mapped to their corresponding data ontology expressions.",
+            "table": jsn
+        }
                 
-        return mapping_result
+        return mapping_result, event_data
     
