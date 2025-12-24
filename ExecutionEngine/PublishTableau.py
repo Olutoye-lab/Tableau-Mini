@@ -2,6 +2,7 @@ import tableauserverclient as TSC
 from dotenv import load_dotenv
 from sse_manager import event_manager
 import os
+import json
 
 load_dotenv()
 
@@ -13,10 +14,11 @@ class TableauCloudPublisher:
         """
         self.user_id = user_id
         self.server_url = server_url
+        print(server_url, site_name, token, token_name)
         self.auth = TSC.PersonalAccessTokenAuth(
             site_id=site_name,
-            token_name=token,
-            personal_access_token=token_name,
+            token_name=token_name,
+            personal_access_token=token,
         )
     
     # def get_token(self, client_id, secret_id, secret_val, user):
@@ -46,11 +48,10 @@ class TableauCloudPublisher:
 
     #     return token
 
-    async def publish(self, file_path, project_name="Default", datasource_name=None, certify=True):
+    def publish(self, file_path, project_name="Default", datasource_name=None, certify=True):
         """
         Publishes the .hyper file and optionally marks it as 'Certified'.
         """
-        await event_manager.publish(self.user_id, event_type="normal", data="Publishing")
 
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"Hyper file not found at: {file_path}")
