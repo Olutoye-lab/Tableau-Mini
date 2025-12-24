@@ -1,11 +1,100 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse
-import asyncio
+from fastapi.exceptions import HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
-from pipeline import run_pipline
+from typing import Dict
+from pipeline import run_pipeline
 from sse_manager import event_manager
+from dotenv import load_dotenv
+
+import redis.asyncio as redis
+import uuid
+import json
+import asyncio
+import os
+
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, specify your frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+load_dotenv()
+sessions: Dict[str, dict] = {}
+
+redis_url = os.getenv("REDIS_URL")
+print("REDIS", redis_url)
+redis_client = redis.from_url(redis_url, decode_responses=True)
+
+
+# # --- Test Pipeline Logic ---
+# async def run_pipeline(payload: dict, user_id: str):
+#     """
+#     Simulates a long-running task and publishes events to the specific user.
+#     """
+#     print(f"\n[PIPELINE] ▶️  Started for user_id: {user_id}")
+#     print(f"[PIPELINE] Payload: {payload}")
+    
+#     try:
+#         # Step 1: Notify start
+#         print(f"[PIPELINE] Step 1: Publishing 'status' event...")
+#         await event_manager.publish(
+#             user_id, 
+#             event_type="status", 
+#             data="Pipeline started. Initializing..."
+#         )
+#         print(f"[PIPELINE] Step 1: Sleeping 1 second...")
+#         await asyncio.sleep(1)
+
+#         # Step 2: Process payload data
+#         data_name = payload.get("name", "Unknown Data")
+#         print(f"[PIPELINE] Step 2: Publishing 'log' event...")
+#         await event_manager.publish(
+#             user_id, 
+#             event_type="log", 
+#             data=f"Processing payload for: {data_name}"
+#         )
+#         print(f"[PIPELINE] Step 2: Sleeping 2 seconds...")
+#         await asyncio.sleep(2)
+
+#         # Step 3: Progress update
+#         print(f"[PIPELINE] Step 3: Publishing 'progress' event...")
+#         await event_manager.publish(
+#             user_id, 
+#             event_type="progress", 
+#             data=json.dumps({"percent": 50, "message": "Halfway there"})
+#         )
+#         print(f"[PIPELINE] Step 3: Sleeping 1 second...")
+#         await asyncio.sleep(1)
+
+#         # Step 4: Completion
+#         print(f"[PIPELINE] Step 4: Publishing 'result' event...")
+#         result = {"result_id": str(uuid.uuid4()), "status": "success"}
+#         await event_manager.publish(
+#             user_id, 
+#             event_type="result", 
+#             data=json.dumps(result)
+#         )
+        
+#         print(f"[PIPELINE] ✅ Completed successfully for user_id: {user_id}\n")
+
+#     except Exception as e:
+#         print(f"[PIPELINE] ❌ Exception caught: {type(e).__name__}: {e}")
+#         import traceback
+#         traceback.print_exc()
+        
+#         # Handle crashes gracefully so the frontend knows it failed
+#         await event_manager.publish(
+#             user_id, 
+#             event_type="error", 
+#             data=str(e)
+#         )
 
 async def event_stream(queue: asyncio.Queue):
     try:
@@ -15,25 +104,73 @@ async def event_stream(queue: asyncio.Queue):
     except asyncio.CancelledError:
         pass
 
-# user_id is a combination of credentials
-@app.get("/events/{user_id}")
-async def sse(user_id: str, request: Request):
-    
+@app.post("/save")
+async def save(request: Request):
    payload = await request.json()
+
+   user_id = str(uuid.uuid4())
+
+   await redis_client.set(user_id, payload)
    
-   #asyncio.create_task(run_pipline(payload, user_id))
+   return {"user_id": user_id}
 
-   queue = await event_manager.connect(user_id)
+@app.get("/events/{user_id}")
+async def sse(user_id: str):
+    print(f"\n{'='*60}")
+    print(f"[SSE ENDPOINT] New connection request for user_id: {user_id}")
+    print(f"{'='*60}\n")
+    
+    payload = await redis_client.get(user_id)
 
-   async def stream():
+    if payload is None:
+        raise HTTPException(status_code=404, detail="User ID not found")
+        
+    # Connect queue first
+    queue = await event_manager.connect(user_id)
+    
+    # Send initial connection event through queue
+    await event_manager.publish(
+        user_id,
+        event_type="connected",
+        data=json.dumps({"user_id": user_id, "status": "connected"})
+    )
+    
+    # Start pipeline
+    asyncio.create_task(run_pipeline(payload, user_id))
+    
+    async def stream():
         try:
-            async for chunk in event_stream(queue):
-                yield chunk
+            print(f"[STREAM] Starting event loop for user {user_id}")
+            chunk_count = 0
+            
+            # This loop should run indefinitely until client disconnects
+            while True:
+                print(f"[STREAM] Waiting for next message from queue...")
+                message = await queue.get()
+                chunk_count += 1
+                print(f"[STREAM] Chunk #{chunk_count} received")
+                print(f"[STREAM] Content: {message[:100]}")
+                yield message
+                
+        except asyncio.CancelledError:
+            print(f"[STREAM] ⚠️  Client disconnected (CancelledError)")
+        except Exception as e:
+            print(f"[STREAM] ❌ Error: {e}")
+            import traceback
+            traceback.print_exc()
         finally:
+            print(f"[STREAM] Cleanup: Disconnecting user {user_id}")
             await event_manager.disconnect(user_id)
-
-   return StreamingResponse(stream(), media_type="text/event-stream")
-
+    
+    return StreamingResponse(
+        stream(), 
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        }
+    )
 
 @app.post("/notify/{user_id}")
 async def notify(user_id: str, msg: str):
