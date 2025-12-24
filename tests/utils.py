@@ -1,6 +1,5 @@
-import csv
 
-def build_test_payload(type, department="", user_input="", table_name="", connection_string="", file_name="", limit=0):
+def build_test_payload(type, credentials={}, user_input="", file_name="", connection_string="", table_name="", limit=0):
 
     # --- types --- 
     # csv
@@ -14,19 +13,18 @@ def build_test_payload(type, department="", user_input="", table_name="", connec
     if type == "csv":
         with open(file_name, mode='r') as file:
             # All files will be processed in pandas as strings
-            payload["data_or_string"] = [file.read()]
+            payload["data"] = [file.read()]
 
     elif type == "json":
         pass
     elif type == "xlsx":
         pass
     else:
-        payload["data_or_string"] = connection_string
+        payload["data"] = connection_string
 
-    payload["credentials"] = 'testcredentials123',
+    payload["credentials"] = credentials,
     payload["limit"] = limit
     payload["table_name"] = table_name
-    payload["department"] = department
     payload["user_input"] = user_input
 
     return payload

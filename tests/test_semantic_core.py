@@ -4,25 +4,29 @@
 
 # import pandas as pd
 # import numpy as np
+# import pytest
 # import asyncio
 
 # table_data = pd.DataFrame()
 # profile = [{'Employee_ID': {'raw_dtype': 'object', 'inferred_type': 'String', 'semantic_tag': 'Categorical_Dimension', 'stats': {'completeness': np.float64(100.0), 'uniqueness': 100.0}, 'is_likely_id': True}, 'Name': {'raw_dtype': 'object', 'inferred_type': 'String', 'semantic_tag': 'UUID_Key', 'stats': {'completeness': np.float64(100.0), 'uniqueness': 100.0}, 'is_likely_id': True}, 'Job_Title': {'raw_dtype': 'object', 'inferred_type': 'String', 'semantic_tag': 'Categorical_Dimension', 'stats': {'completeness': np.float64(100.0), 'uniqueness': 9.0}, 'is_likely_id': False}, 'Sector_Focus': {'raw_dtype': 'object', 'inferred_type': 'String', 'semantic_tag': 'Categorical_Dimension', 'stats': {'completeness': np.float64(100.0), 'uniqueness': 12.0}, 'is_likely_id': False}, 'Years_Experience': {'raw_dtype': 'int64', 'inferred_type': 'Numeric', 'semantic_tag': 'Measure', 'stats': {'completeness': np.float64(100.0), 'uniqueness': 16.0}, 'is_likely_id': False}, 'Annual_Salary': {'raw_dtype': 'int64', 'inferred_type': 'Numeric', 'semantic_tag': 'Measure', 'stats': {'completeness': np.float64(100.0), 'uniqueness': 94.0}, 'is_likely_id': False}, 'Performance_Rating': {'raw_dtype': 'float64', 'inferred_type': 'Numeric', 'semantic_tag': 'Measure', 'stats': {'completeness': np.float64(100.0), 'uniqueness': 16.0}, 'is_likely_id': False}}]
-# prompt = "I need to analyze our Q3 ad spend."
+# prompt = "Please map analyse this data. And Return ONLY one of these three text. Human Resources, Sales or Finance"
+# user_id = ""
 
+# @pytest.mark.asyncio
 # async def test_intent_decoder():
-#     decoder = IntentDecoder()
+#     decoder = IntentDecoder(user_id)
 
 #     # get onthology - Json
 #     for metadata in profile:
-#         ontology = decoder.decode_intent(user_prompt=prompt, metadata_profile=metadata)
+#         ontology = await decoder.decode_intent(user_prompt=prompt, metadata_profile=metadata)
 
 #         print("====================")
 #         print(ontology)
 
 #         assert True
     
-      
+
+# @pytest.mark.asyncio   
 # def test_semantic_mapper():
 #     # 1. Setup Ontology
 #     finance_ontology = {
@@ -53,10 +57,10 @@
 #     assert True    
 
 
-
 # def test_entity_resolver():
+#     user_id = ""
 #     # 1. Initialize Resolver with our "AI"
-#     resolver = EntityResolver()
+#     resolver = EntityResolver(user_id)
 
 #     # 2. Create Messy Data (10 rows, but only 3 unique entities)
 #     raw_data = pd.Series([
@@ -77,4 +81,4 @@
 #     # Shows we only paid for 6 resolutions, not 10
 #     print(resolver.resolution_cache)
 
-#     assert True    
+#     assert True
