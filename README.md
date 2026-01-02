@@ -86,7 +86,7 @@ This is a project acting as the server side component for the Tableau Mini exten
 
 ### Project Archtecture
 
-<img src="assets\Tableau Mini Framework.jpeg" alt="Logo" width="500" height="300">
+<img src="assets\Tableau Mini Framework.jpeg" alt="Logo" width="700" height="400">
 
 
 The extension architecture is split into three stages each with varying classes:
