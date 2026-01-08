@@ -29,7 +29,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/github_username/Tableau Mini">
+  <a href="https://github.com/Max-labs/Tableau Mini">
     <img src="assets/mini-logo.jpeg" alt="Logo" width="120" height="100">
   </a>
 
@@ -38,12 +38,12 @@
   <p align="center">
     A Semantic Data ingestion extension for Tableau 
     <br />
-    <a href="https://github.com/github_username/Tableau Mini"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/Max-labs/Tableau Mini"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/github_username/Tableau Mini">View Demo</a>
+    <a href="https://github.com/Max-labs/Tableau Mini">View Demo</a>
     &middot;
-    <a href="https://github.com/github_username/Tableau Mini/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    <a href="https://github.com/Max-labs/Tableau Mini/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
   </p>
 </div>
 
@@ -109,9 +109,18 @@ The extension architecture is split into three stages each with varying classes:
 
 ### Built With
 
-* [![salesforce][salesforce]][salesforce-url]
-* [![python][python]][python-url]
-* [![Tableau Extensions API][tableau-extensions-api]][tableau-url]
+* <a href="https://github.com/Max-labs/Tableau Mini">
+    <img src="https://login.salesforce.com/img/logo214.svg" alt="Logo" width="120" height="100">
+    <p>Salesforce Platform</p>
+  </a>
+* <a href="https://github.com/Max-labs/Tableau Mini">
+    <img src="https://logos-world.net/wp-content/uploads/2021/10/Python-Emblem.png" alt="Logo" width="100" height="60">
+    <p>Python</p>
+  </a>
+* <a href="https://github.com/Max-labs/Tableau Mini">
+    <img src="https://www.tableau.com/sites/default/files/styles/scale_175_wide/public/2021-08/ExtensionsAPI.png?itok=Nt7mjuYq" alt="Logo" width="100" height="100">
+    <p>Tableau Extenstions API</p>
+  </a>
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -121,7 +130,7 @@ The extension architecture is split into three stages each with varying classes:
 <!-- GETTING STARTED -->
 ## Getting Started
 
-To get a local copy up and running follow these simple example steps.
+To Run this project locally:
 
 ### Prerequisites
 
@@ -129,9 +138,9 @@ To get a local copy up and running follow these simple example steps.
 1. Create a Sales Force Account
 2. Add a connected app by following the Agent Force Developer Guide. [Sales Force Developer Guide][SF-dev-guide]
 3. Add ENV variables:
-* SF_DOMAIN_URL
 * SF_CLIENT_KEY
 * SF_CLIENT_SECRET
+* SF_REDIRCT_URL
 
 4. Set Up agents
 
@@ -151,12 +160,27 @@ To get a local copy up and running follow these simple example steps.
 
 _**Note: Get the AGENT ID from the agent URL -> (Sample) org-185bfwega89f.my.salesforce-setup.com/lightning/setup/EinsteinCopilot/0Xxbm000000yqlXCPQ <- (AGENT ID)/edit**_
 
+**.env File**
+| ENV variables| 
+|--------------|
+DECODER_AGENT_ID
+ENTITY_AGENT_ID
+SF_DOMAIN_URL
+SF_CLIENT_KEY
+SF_CLIENT_SECRET
+SF_REDIRECT_URL
+TB_SERVER_URL 
+TB_SITE_NAME
+TB_TOKEN ```# Tableau PAT token```
+TB_TOKEN_NAME
+REDIS_URL
+
 
 ### Installation
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/github_username/Tableau Mini.git
+   git clone https://github.com/Max-labs/Tableau Mini.git
    ```
 
 2. Place the redis url of the remote/local server within an env variable (REDIS_URL)
@@ -183,12 +207,18 @@ _**Note: Get the AGENT ID from the agent URL -> (Sample) org-185bfwega89f.my.sal
     ```
 5. Change git remote url to avoid accidental pushes to base project
    ```sh
-   git remote set-url origin github_username/Tableau Mini
+   git remote set-url origin Max-labs/Tableau Mini
    git remote -v # confirm the changes
    ```
-
-**Deploy on Serverless Architecture**
-3. 
+6. Run tests by uncommenting the required test.
+   ```
+   # To run the full pipeline uncomment test_pipeline.pytest
+   # The default dataset is finance.csv in tests\sample_data\normal_data\finance.csv  
+    
+   cd tests
+   pytest -s
+   ```
+    
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -198,9 +228,14 @@ _**Note: Get the AGENT ID from the agent URL -> (Sample) org-185bfwega89f.my.sal
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-To use this project:
-- Can be used within the Tableau through the extension Market Place. [Extensions Market Place][tableau-extensions-api]
-- Can be run locally. Steps provided above.
+This project can be demoed on Tableau through the Tableau through the extension Market Place. [Extensions Market Place][tableau-extensions-api]
+- Install the Extension
+- Open the Dashboad
+- Move to the pannel
+- Select a sample dataset
+- Enter tableau Credentials and Start!!
+
+This project can also be run locally for both server and client components. __Steps provided above.__
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -209,12 +244,14 @@ To use this project:
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
+- [x] Intergrate headless client panel into Main dashboard.
+- [ ] Working with the Tableau R&D team, to utilise tableau connections architecture into Mini, for seamless and robust data ingestion.
+- [ ] Implement a feature to automatically validate and score datasets based on specified business logic.
+    - e.g.  sales pipeline must be Lead → Qualified → Demo → Proposal → Closed (Won). 
+    - If a dataset violates this it is negatively scored (-2)
+- [ ] Implementing caching to remove re-entering credentials per ingestion.
 
-See the [open issues](https://github.com/github_username/Tableau Mini/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/Max-labs/Tableau-Mini/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -238,7 +275,7 @@ Don't forget to give the project a star! Thanks again!
 
 ### Top contributors:
 
-<a href="https://github.com/github_username/Tableau Mini/graphs/contributors">
+<a href="https://github.com/Max-labs/Tableau-Mini/graphs/contributors">
   <img src="https://avatars.githubusercontent.com/u/180702992?s=48&v=4" alt="contrib.rocks image"
   width="50" height="50"  />
 </a>
@@ -257,7 +294,7 @@ Distributed under the project_license. See `LICENSE.txt` for more information.
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-Thank you to the Tableau Hackathon team for providing a platform to build projects like this. 
+Thank you to the Tableau Hackathon team for providing a platform to build skill driven projects. 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -265,16 +302,16 @@ Thank you to the Tableau Hackathon team for providing a platform to build projec
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/github_username/Tableau Mini.svg?style=for-the-badge
-[contributors-url]: https://github.com/github_username/Tableau Mini/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/github_username/Tableau Mini.svg?style=for-the-badge
-[forks-url]: https://github.com/github_username/Tableau Mini/network/members
-[stars-shield]: https://img.shields.io/github/stars/github_username/Tableau Mini.svg?style=for-the-badge
-[stars-url]: https://github.com/github_username/Tableau Mini/stargazers
-[issues-shield]: https://img.shields.io/github/issues/github_username/Tableau Mini.svg?style=for-the-badge
-[issues-url]: https://github.com/github_username/Tableau Mini/issues
-[license-shield]: https://img.shields.io/github/license/github_username/Tableau Mini.svg?style=for-the-badge
-[license-url]: https://github.com/github_username/Tableau Mini/blob/master/LICENSE.txt
+[contributors-shield]: https://img.shields.io/github/contributors/Max-labs/Tableau Mini.svg?style=for-the-badge
+[contributors-url]: https://github.com/Max-labs/Tableau Mini/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/Max-labs/Tableau Mini.svg?style=for-the-badge
+[forks-url]: https://github.com/Max-labs/Tableau Mini/network/members
+[stars-shield]: https://img.shields.io/github/stars/Max-labs/Tableau Mini.svg?style=for-the-badge
+[stars-url]: https://github.com/Max-labs/Tableau Mini/stargazers
+[issues-shield]: https://img.shields.io/github/issues/Max-labs/Tableau Mini.svg?style=for-the-badge
+[issues-url]: https://github.com/Max-labs/Tableau Mini/issues
+[license-shield]: https://img.shields.io/github/license/Max-labs/Tableau Mini.svg?style=for-the-badge
+[license-url]: https://github.com/Max-labs/Tableau Mini/blob/master/LICENSE.txt
 [-shield]: https://img.shields.io/badge/--black.svg?style=for-the-badge&logo=&colorB=555
 [-url]: https://.com/in/_username
 [product-screenshot]: images/screenshot.png
@@ -287,7 +324,7 @@ Thank you to the Tableau Hackathon team for providing a platform to build projec
 [React-url]: https://reactjs.org/
 [tableau-extensions-api]: https://www.tableau.com/sites/default/files/styles/scale_175_wide/public/2021-08/ExtensionsAPI.png?itok=Nt7mjuYq
 [tableau-url]: https://www.tableau.com/developer/tools/extensions-api
-[salesforce]: https://login.salesforce.com/img/logo214.svg
+[salesforce]: https://login.salesforce.com/img/logo214.svg 
 [salesforce-url]: https://developer.salesforce.com/docs/einstein/genai/guide/agent-api-get-started.html
 
 <!-- Custom -->
