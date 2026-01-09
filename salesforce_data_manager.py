@@ -337,5 +337,3 @@ class SalesforceStorageManager:
         }
         getattr(self.sf, self.storage_object).update(record['Id'], update_data)
         return True
-
-StorageManager = SalesforceStorageManager.connect_via_cli()

@@ -8,7 +8,7 @@ from ExecutionEngine.HyperAPI import HyperParquetIngestor
 from ExecutionEngine.PublishTableau import TableauCloudPublisher
 
 from sse_manager import event_manager
-from salesforce_data_manager import StorageManager
+from salesforce_auth_manager import StorageManager
 import pandas as pd
 import json
 import asyncio 

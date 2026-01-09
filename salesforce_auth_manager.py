@@ -153,7 +153,6 @@ class SalesforceOAuthClient:
             # Need new authorization
             self.authorize()
         
-        y = self.tokens
         # Try to connect with current token
         try:
             self.sf = Salesforce(
