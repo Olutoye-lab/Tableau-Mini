@@ -2,7 +2,7 @@ from sentence_transformers import SentenceTransformer
 from sse_manager import event_manager
 import pandas as pd
 import faiss
-import json
+import uuid
 
 
 class SemanticMapper:
@@ -19,6 +19,7 @@ class SemanticMapper:
         self.index = None  # The FAISS Vector Database
         self.ontology_fields = [] 
         self.threshold = threshold
+        self.report_log = []
     
     def precompute_ontology(self, ontology_json):
         """
@@ -92,6 +93,16 @@ class SemanticMapper:
                     "suggestion": matched_ontology_field,
                     "status": "UNMAPPED"
                 }
+
+                self.report_log.append({
+                    "id": str(uuid.uuid4()),
+                    "column": raw_col,
+                    "type": "Unmapped column",
+                    "message": f"Unable to map the column header '{raw_col}' to any exact or similar descriptions in the enterprise data dictionary. Please check if the column exists in the data dictionary before proceeding.",
+                    "status": "warning"
+                })
+                
+                
         
         jsn = []
         for key, value in mapping_result.items():
@@ -109,5 +120,5 @@ class SemanticMapper:
             "table": jsn
         }
                 
-        return mapping_result, event_data
+        return mapping_result, event_data, self.report_log
     

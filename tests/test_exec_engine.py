@@ -24,7 +24,8 @@
 #     }
 
 #     # 3. Run Checks
-#     calculator = WeightedConfidenceCalculator(df, business_weights)
+#     user_id = ""
+#     calculator = WeightedConfidenceCalculator(user_id, df, business_weights)
 
 #     # Apply checks to relevant columns
 #     calculator.check_uniqueness('Transaction_ID') # Passes
@@ -33,8 +34,9 @@
 
 #     # 4. Calculate
 #     print("\n--- detailed scoring breakdown ---")
-#     final_metric = calculator.calculate_weighted_score()
+#     report_data = calculator.calculate_weighted_score()
 
 #     print("\n" + "="*30)
-#     print(f"FINAL TRUST SCORE: {final_metric}%")
+#     print(f"FINAL DATA: {report_data}")
 #     print("="*30)
+#     print("Score", report_data["score"])

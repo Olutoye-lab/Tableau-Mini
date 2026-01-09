@@ -1,6 +1,10 @@
 
-def build_test_payload(type, credentials={}, user_input="", file_name="", connection_string="", table_name="", limit=0):
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
+
+def build_test_payload(type, credentials={}, file_name="", connection_string="", table_name="", limit=0):
     # --- types --- 
     # csv
     # json
@@ -13,7 +17,7 @@ def build_test_payload(type, credentials={}, user_input="", file_name="", connec
     if type == "csv":
         with open(file_name, mode='r') as file:
             # All files will be processed in pandas as strings
-            payload["data"] = [file.read()]
+            payload["data"] = file.read()
 
     elif type == "json":
         pass
@@ -25,7 +29,11 @@ def build_test_payload(type, credentials={}, user_input="", file_name="", connec
     payload["credentials"] = credentials,
     payload["limit"] = limit
     payload["table_name"] = table_name
-    payload["user_input"] = user_input
+
+    payload["token"] = os.getenv("TB_TOKEN") or ""
+    payload["token_name"] = os.getenv("TB_TOKEN_NAME") or ""
+    payload["server_url"] = os.getenv("TB_SERVER_URL") or ""
+    payload["site_name"] = os.getenv("TB_SITE_NAME") or ""
 
     return payload
     

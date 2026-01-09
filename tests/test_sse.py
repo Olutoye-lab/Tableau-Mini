@@ -4,7 +4,6 @@ import json
 from httpx import AsyncClient
 from typing import AsyncGenerator
 
-# NOTE: We do NOT import 'app' from main here because we are hitting the network.
 
 # 1. Fixture configured for Real Server
 @pytest_asyncio.fixture
@@ -19,7 +18,7 @@ async def test_sse_stream(client: AsyncClient):
         
     # 1. Create the session data on the real server
     # Note: Ensure your server code allows this (GET vs POST issue discussed earlier)
-    save_response = await client.post("/save", json=json.dumps({"name": "Real Network Test"}))
+    save_response = await client.post("/save", json={"name": "Real Network Test", "user_id": "test_user"})
     assert save_response.status_code == 200
     
     # Grab the user_id if the server returns a different one
@@ -41,3 +40,5 @@ async def test_sse_stream(client: AsyncClient):
             # Wait for 'result' or max 5 messages to avoid hanging indefinitely
             if "result" in line or count >= 5:
                 break
+
+#NOTE: Ensure to comment necessasary parts of main.py when running this file

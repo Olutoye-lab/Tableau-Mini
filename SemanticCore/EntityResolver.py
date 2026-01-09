@@ -1,10 +1,10 @@
 from agent import call_salesforce_agent
-from sse_manager import event_manager
 import pandas as pd
 import json
 from dotenv import load_dotenv
 import os
 import re
+import uuid
 
 load_dotenv()
 
@@ -14,15 +14,16 @@ class EntityResolver:
         Initializes the entity resolver which resolves row incosistencies 
         """
         self.user_id = user_id
+        self.report_log = []
         self.resolution_cache = {} # "Memory" to avoid re-resolving known entities
 
-    def resolve(self, series: pd.Series) -> pd.Series:
+    def resolve(self, series: pd.Series, col_name: str) -> tuple[pd.Series, list]:
         """
         Resolves a dirty column to standard entities efficiently.
         """
         # 1. Input Validation
         if series.empty:
-            return series
+            return series, self.report_log
             
         # 2. Optimization: Extract only UNIQUE values
         # We drop NA because we don't pay AI to clean nulls.
@@ -46,7 +47,7 @@ class EntityResolver:
         Return a dictionary mapping canonical names to their variants {example}
         Or an Empty dict {empty_dict}
         """
-        # 4. Batch Process via AI (The Arbitrary Call)
+        # 4. Batch Process via SalesForce models
         if unknown_values:
             print(f"⚙️ Entity Resolver: Sending {len(unknown_values)} unique items to AI...")
             
@@ -69,6 +70,15 @@ class EntityResolver:
                 for key, dirty_values in results.items():
                     # key: mapped value (str)
                     # dirty_values: some original values (list)
+
+                    for value in dirty_values:
+                        self.report_log.append({
+                            "id": str(uuid.uuid4()),
+                            "column": col_name,
+                            "type": "Inconsistent Cell Namming",
+                            "message": f"Cell '{value}', has found to have an inconsistent naming schema. It has been replace with {key}'. Please validate with your team on consitent naming conventions!! ",
+                            "status": "Critical"
+                        })
                     formatted_results.update(dict(map(lambda x: (x, key), dirty_values)))
             
                 self.resolution_cache.update(formatted_results)
@@ -79,4 +89,4 @@ class EntityResolver:
 
         # 6. Apply Mapping to the full dataset (Vectorized Map)
         # Using .get to handle any NaNs or unexpected values gracefully
-        return series.map(lambda x: self.resolution_cache.get(x, x))
+        return series.map(lambda x: self.resolution_cache.get(x, x)), self.report_log

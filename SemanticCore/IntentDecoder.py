@@ -18,13 +18,13 @@ class IntentDecoder:
     def get_ontology(self):
         ontology = {}
 
-        with open(file="ontology/Finance.json", mode="r") as finance:
+        with open(file="../ontology/Finance.json", mode="r") as finance:
             ontology["finance"] = finance.read()
 
-        with open(file="ontology/Sales.json", mode="r") as sales:
+        with open(file="../ontology/Sales.json", mode="r") as sales:
             ontology["sales"] = sales.read()
 
-        with open(file="ontology/HumanResources.json") as hr:
+        with open(file="../ontology/HumanResources.json") as hr:
             ontology["human resources"] = hr.read()
         
         return ontology
@@ -74,7 +74,7 @@ class IntentDecoder:
             ontology_name = "Human Resources"
         else:
             ontology_name = "Finance"
-        
+
         ontology = json.loads(self.ontology_library[ontology_name.lower()])
 
         fields = []

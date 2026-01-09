@@ -8,11 +8,12 @@ from ExecutionEngine.HyperAPI import HyperParquetIngestor
 from ExecutionEngine.PublishTableau import TableauCloudPublisher
 
 from sse_manager import event_manager
+from salesforce_data_manager import StorageManager
 import pandas as pd
 import json
 import asyncio 
 import tempfile
-from pathlib import Path
+import random
 from datetime import datetime
 
 
@@ -44,7 +45,7 @@ async def run_pipeline(payload, user_id):
 
     print(table_data)
 
-    cleaned_df, ontology, table_profile = await run_intelligence_pipeline(user_id, table_data=table_data)
+    cleaned_df, ontology, table_profile, semantic_core_logs = await run_intelligence_pipeline(user_id, table_data=table_data)
 
     print(cleaned_df)
 
@@ -55,11 +56,11 @@ async def run_pipeline(payload, user_id):
         "token_name": token_name
     }
 
-    await run_execution_engine(user_id, ontology, df=cleaned_df, table_profile=table_profile, credentials=credentials)
+    await run_execution_engine(user_id, ontology, df=cleaned_df, table_profile=table_profile, credentials=credentials, total_logs=semantic_core_logs)
 
     return ""
 
-async def run_execution_engine(user_id, ontology, df, table_profile, credentials):
+async def run_execution_engine(user_id, ontology, df, table_profile, credentials, total_logs):
 
     weights = {}
 
@@ -73,8 +74,22 @@ async def run_execution_engine(user_id, ontology, df, table_profile, credentials
         calculator.check_uniqueness(col, is_primary_key=table_profile[col]["is_likely_id"])
         null = calculator.check_nulls(col)
 
-    final_metric = calculator.calculate_weighted_score()
+    report_data, logs, formated_column_scores, null_score, final_score = await asyncio.to_thread(calculator.calculate_weighted_score)
+    
+    metadata = {
+        "column_scores": formated_column_scores,
+        "null_score": null_score,
+        "report_score": final_score
+    }
 
+    total_logs.extend(logs)
+
+    print("Total logs", total_logs)
+
+    report_name = str(random.randrange(0, 1000)).ljust(4, "0")
+
+    await asyncio.to_thread(StorageManager.add_report, report_data=total_logs, user_id=user_id, report_name=f"Mini Report {report_name}", metadata=metadata)
+    
     target_project = "Mini_Project"  # OR: os.getenv("TABLEAU_TEST_PROJECT")
     target_datasource = "Mini_Datasource/" + datetime.now().strftime("%H:%M:%S")
 
@@ -110,6 +125,7 @@ async def run_execution_engine(user_id, ontology, df, table_profile, credentials
                 "id": 5,
                 "title": "Results",
                 "text": "Please view the main page for your results.",
+                "report" : report_data
             }
             await event_manager.publish(user_id, event_type="normal", data=json.dumps(event_data))
             
@@ -119,6 +135,7 @@ async def run_execution_engine(user_id, ontology, df, table_profile, credentials
         print("\n✅ Live publish test completed successfully.")
 
 async def run_intelligence_pipeline(user_id, table_data):
+    logs = []
     decoder = IntentDecoder(user_id)
 
     # ----- INTENT DECODER ---- 
@@ -139,7 +156,8 @@ async def run_intelligence_pipeline(user_id, table_data):
         mapper.precompute_ontology(ontology_json=ontology)
 
         # Map ontology vector embeddings
-        updated_col_mappings, event_data = await asyncio.to_thread(mapper.map_columns, raw_input=data)
+        updated_col_mappings, event_data, semantic_logs = await asyncio.to_thread(mapper.map_columns, raw_input=data)
+        logs.extend(semantic_logs)
 
         await event_manager.publish(user_id, event_type="normal", data=json.dumps(event_data))
 
@@ -152,7 +170,8 @@ async def run_intelligence_pipeline(user_id, table_data):
         for column_name, column_data in data.items():
 
             if table_profile[column_name]["inferred_type"] == "String" and table_profile[column_name]["semantic_tag"] == "Categorical_Dimension":
-                updated_data_dict[updated_col_names[col_index]] = await asyncio.to_thread(data_resolver.resolve, series=pd.Series(column_data) )
+                updated_data_dict[updated_col_names[col_index]], resolver_logs = await asyncio.to_thread(data_resolver.resolve, series=pd.Series(column_data), col_name=updated_col_names[col_index])
+                logs.extend(resolver_logs)
             else:
                 updated_data_dict[updated_col_names[col_index]] = column_data
 
@@ -169,8 +188,8 @@ async def run_intelligence_pipeline(user_id, table_data):
 
         await event_manager.publish(user_id, event_type="normal", data=json.dumps(event_data))
 
-        return updated_df, ontology, table_profile
-    return "", "", ""
+        return updated_df, ontology, table_profile, logs
+    return "", "", "", ""
 
 async def ingest_data(user_id, dataType, data_or_string: str, limit, table_name):
     data_ingestor = BridgeIngestor(user_id)

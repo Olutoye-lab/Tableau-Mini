@@ -8,7 +8,7 @@
 # def test_pipeline():
 #     # Setup: Create a user ID/Session
 #     payload = build_test_payload(type="csv", file_name="sample_data/normal_data/finance.csv", )
-#     user_id = ""
+#     user_id = "test user"
 
 #     print(payload)
 
