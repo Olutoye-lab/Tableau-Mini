@@ -147,7 +147,7 @@ class SalesforceOAuthClient:
             force_reauth: Force new authorization even if tokens exist
         """
         # Load existing tokens if available
-        if not force_reauth and self._load_tokens():
+        if self._load_tokens():
             print(f"✓ Loaded tokens from {self.token_file}")
         else:
             # Need new authorization
