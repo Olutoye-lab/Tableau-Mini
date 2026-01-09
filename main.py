@@ -14,6 +14,7 @@ import uuid
 import json
 import asyncio
 import os
+import uvicorn
 
 
 app = FastAPI()
@@ -193,3 +194,7 @@ def read_hello(name: str = "World"):
 @app.get("/")
 def root():
    return {"data": "Heath Check Sucessfull"}
+
+if __name__  == "__main__":
+    port = int(os.getenv("PORT", 10000))
+    uvicorn.run(app=app, host="0.0.0.0", port=port)
