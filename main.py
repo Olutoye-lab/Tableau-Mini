@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from typing import Dict
 # Comment this import when using test-sse.py
-#from pipeline import run_pipeline
+from pipeline import run_pipeline
 from sse_manager import event_manager
 from dotenv import load_dotenv
 
@@ -33,69 +33,69 @@ redis_url = os.getenv("REDIS_URL") or ""
 redis_token = os.getenv("REDIS_TOKEN") or ""
 redis_client = Redis(url=redis_url, token=redis_token)
 
-# uncomment this function when using test-see.py
-# --- Test Pipeline Logic ---
-async def run_pipeline(payload: dict, user_id: str):
-    """
-    Simulates a long-running task and publishes events to the specific user.
-    """
-    print(f"\n[PIPELINE] ▶️  Started for user_id: {user_id}")
-    print(f"[PIPELINE] Payload: {payload}")
+# # uncomment this function when using test-see.py
+# # --- Test Pipeline Logic ---
+# async def run_pipeline(payload: dict, user_id: str):
+#     """
+#     Simulates a long-running task and publishes events to the specific user.
+#     """
+#     print(f"\n[PIPELINE] ▶️  Started for user_id: {user_id}")
+#     print(f"[PIPELINE] Payload: {payload}")
     
-    try:
-        # Step 1: Notify start
-        print(f"[PIPELINE] Step 1: Publishing 'status' event...")
-        await event_manager.publish(
-            user_id, 
-            event_type="status", 
-            data="Pipeline started. Initializing..."
-        )
-        print(f"[PIPELINE] Step 1: Sleeping 1 second...")
-        await asyncio.sleep(1)
+#     try:
+#         # Step 1: Notify start
+#         print(f"[PIPELINE] Step 1: Publishing 'status' event...")
+#         await event_manager.publish(
+#             user_id, 
+#             event_type="status", 
+#             data="Pipeline started. Initializing..."
+#         )
+#         print(f"[PIPELINE] Step 1: Sleeping 1 second...")
+#         await asyncio.sleep(1)
 
-        # Step 2: Process payload data
-        data_name = payload.get("name", "Unknown Data")
-        print(f"[PIPELINE] Step 2: Publishing 'log' event...")
-        await event_manager.publish(
-            user_id, 
-            event_type="log", 
-            data=f"Processing payload for: {data_name}"
-        )
-        print(f"[PIPELINE] Step 2: Sleeping 2 seconds...")
-        await asyncio.sleep(2)
+#         # Step 2: Process payload data
+#         data_name = payload.get("name", "Unknown Data")
+#         print(f"[PIPELINE] Step 2: Publishing 'log' event...")
+#         await event_manager.publish(
+#             user_id, 
+#             event_type="log", 
+#             data=f"Processing payload for: {data_name}"
+#         )
+#         print(f"[PIPELINE] Step 2: Sleeping 2 seconds...")
+#         await asyncio.sleep(2)
 
-        # Step 3: Progress update
-        print(f"[PIPELINE] Step 3: Publishing 'progress' event...")
-        await event_manager.publish(
-            user_id, 
-            event_type="progress", 
-            data=json.dumps({"percent": 50, "message": "Halfway there"})
-        )
-        print(f"[PIPELINE] Step 3: Sleeping 1 second...")
-        await asyncio.sleep(1)
+#         # Step 3: Progress update
+#         print(f"[PIPELINE] Step 3: Publishing 'progress' event...")
+#         await event_manager.publish(
+#             user_id, 
+#             event_type="progress", 
+#             data=json.dumps({"percent": 50, "message": "Halfway there"})
+#         )
+#         print(f"[PIPELINE] Step 3: Sleeping 1 second...")
+#         await asyncio.sleep(1)
 
-        # Step 4: Completion
-        print(f"[PIPELINE] Step 4: Publishing 'result' event...")
-        result = {"result_id": str(uuid.uuid4()), "status": "success"}
-        await event_manager.publish(
-            user_id, 
-            event_type="result", 
-            data=json.dumps(result)
-        )
+#         # Step 4: Completion
+#         print(f"[PIPELINE] Step 4: Publishing 'result' event...")
+#         result = {"result_id": str(uuid.uuid4()), "status": "success"}
+#         await event_manager.publish(
+#             user_id, 
+#             event_type="result", 
+#             data=json.dumps(result)
+#         )
         
-        print(f"[PIPELINE] ✅ Completed successfully for user_id: {user_id}\n")
+#         print(f"[PIPELINE] ✅ Completed successfully for user_id: {user_id}\n")
 
-    except Exception as e:
-        print(f"[PIPELINE] ❌ Exception caught: {type(e).__name__}: {e}")
-        import traceback
-        traceback.print_exc()
+#     except Exception as e:
+#         print(f"[PIPELINE] ❌ Exception caught: {type(e).__name__}: {e}")
+#         import traceback
+#         traceback.print_exc()
         
-        # Handle crashes gracefully so the frontend knows it failed
-        await event_manager.publish(
-            user_id, 
-            event_type="error", 
-            data=str(e)
-        )
+#         # Handle crashes gracefully so the frontend knows it failed
+#         await event_manager.publish(
+#             user_id, 
+#             event_type="error", 
+#             data=str(e)
+#         )
 
 async def event_stream(queue: asyncio.Queue):
     try:
