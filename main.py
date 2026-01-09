@@ -9,7 +9,7 @@ from typing import Dict
 from sse_manager import event_manager
 from dotenv import load_dotenv
 
-import redis.asyncio as redis
+from upstash_redis import Redis
 import uuid
 import json
 import asyncio
@@ -29,9 +29,9 @@ app.add_middleware(
 load_dotenv()
 sessions: Dict[str, dict] = {}
 
-redis_url = os.getenv("REDIS_URL")
-print("REDIS", redis_url)
-redis_client = redis.from_url(redis_url, decode_responses=True)
+redis_url = os.getenv("REDIS_URL") or ""
+redis_token = os.getenv("REDIS_TOKEN") or ""
+redis_client = Redis(url=redis_url, token=redis_token)
 
 # uncomment this function when using test-see.py
 # --- Test Pipeline Logic ---
@@ -109,15 +109,15 @@ async def event_stream(queue: asyncio.Queue):
 async def save(request: Request):
     payload = await request.json()
 
-    print(payload, type(payload))
-
     user_id = payload["user_id"]
 
     if user_id == "":
         user_id = str(uuid.uuid4())
 
+    if (type(payload) == dict):
+        payload = json.dumps(payload)
 
-    await redis_client.set(user_id, payload)
+    redis_client.set(user_id, payload)
     
     return {"user_id": user_id}
 
@@ -127,11 +127,13 @@ async def sse(user_id: str):
     print(f"[SSE ENDPOINT] New connection request for user_id: {user_id}")
     print(f"{'='*60}\n")
     
-    payload = await redis_client.get(user_id)
+    payload = redis_client.get(user_id)
 
     if payload is None:
         raise HTTPException(status_code=404, detail="User ID not found")
         
+    payload = json.loads(payload)
+
     # Connect queue first
     queue = await event_manager.connect(user_id)
     
