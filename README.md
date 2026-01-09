@@ -18,12 +18,6 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![project_license][license-shield]][license-url]
-
 
 
 <!-- PROJECT LOGO -->
@@ -180,7 +174,7 @@ REDIS_URL
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/Max-labs/Tableau Mini.git
+   git clone https://github.com/Olutoye-lab/Tableau Mini.git
    ```
 
 2. Place the redis url of the remote/local server within an env variable (REDIS_URL)
@@ -207,7 +201,7 @@ REDIS_URL
     ```
 5. Change git remote url to avoid accidental pushes to base project
    ```sh
-   git remote set-url origin Max-labs/Tableau Mini
+   git remote set-url origin github_username/Tableau Mini
    git remote -v # confirm the changes
    ```
 6. Run tests by uncommenting the required test.
@@ -275,7 +269,7 @@ Don't forget to give the project a star! Thanks again!
 
 ### Top contributors:
 
-<a href="https://github.com/Max-labs/Tableau-Mini/graphs/contributors">
+<a href="https://github.com/Olutoye-lab/Tableau-Mini/graphs/contributors">
   <img src="https://avatars.githubusercontent.com/u/180702992?s=48&v=4" alt="contrib.rocks image"
   width="50" height="50"  />
 </a>
@@ -302,19 +296,19 @@ Thank you to the Tableau Hackathon team for providing a platform to build skill 
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/Max-labs/Tableau Mini.svg?style=for-the-badge
-[contributors-url]: https://github.com/Max-labs/Tableau Mini/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/Max-labs/Tableau Mini.svg?style=for-the-badge
-[forks-url]: https://github.com/Max-labs/Tableau Mini/network/members
-[stars-shield]: https://img.shields.io/github/stars/Max-labs/Tableau Mini.svg?style=for-the-badge
-[stars-url]: https://github.com/Max-labs/Tableau Mini/stargazers
-[issues-shield]: https://img.shields.io/github/issues/Max-labs/Tableau Mini.svg?style=for-the-badge
-[issues-url]: https://github.com/Max-labs/Tableau Mini/issues
-[license-shield]: https://img.shields.io/github/license/Max-labs/Tableau Mini.svg?style=for-the-badge
-[license-url]: https://github.com/Max-labs/Tableau Mini/blob/master/LICENSE.txt
+[contributors-shield]: https://img.shields.io/github/contributors/Olutoye-lab/Tableau-Mini.svg?style=for-the-badge
+[contributors-url]: https://github.com/Olutoye-lab/Tableau-Mini/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/Olutoye-lab/Tableau-Mini.svg?style=for-the-badge
+[forks-url]: https://github.com/Olutoye-lab/Tableau-Mini/network/members
+[stars-shield]: https://img.shields.io/github/stars/Olutoye-lab/Tableau-Mini.svg?style=for-the-badge
+[stars-url]: https://github.com/Olutoye-lab/Tableau-Mini/stargazers
+[issues-shield]: https://img.shields.io/github/issues/Olutoye-lab/Tableau-Mini.svg?style=for-the-badge
+[issues-url]: https://github.com/Olutoye-lab/Tableau-Mini/issues
+[license-shield]: https://img.shields.io/github/license/Olutoye-lab/Tableau-Mini.svg?style=for-the-badge
+[license-url]: https://github.com/Olutoye-lab/Tableau-Mini/blob/master/LICENSE.txt
 [-shield]: https://img.shields.io/badge/--black.svg?style=for-the-badge&logo=&colorB=555
-[-url]: https://.com/in/_username
-[product-screenshot]: images/screenshot.png
+[-url]: https://.com/in/Olutoye-lab
+[product-screenshot]: assets/logo.jpeg
 <!-- Shields.io badges. You can a comprehensive list with many more badges at: https://github.com/inttter/md-badges -->
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Next-url]: https://nextjs.org/
