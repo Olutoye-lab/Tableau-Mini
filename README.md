@@ -221,13 +221,20 @@ REDIS_URL
 
 <!-- USAGE EXAMPLES -->
 ## Usage
+* Download the .trex file here: [Download Tableau Mini Extension](https://github.com/Olutoye-lab/Tableau-Mini-Main/releases/latest/download/ext_tableau_mini.trex)
 
-This project can be demoed on Tableau through the Tableau through the extension Market Place. [Extensions Market Place][tableau-extensions-api]
-- Install the Extension
-- Open the Dashboad
-- Move to the pannel
-- Select a sample dataset
-- Enter tableau Credentials and Start!!
+
+To add Mini extenstion in your Tableau Cloud. 
+* Go to Settings -> Extensions -> Extenstion Url
+* Add Url -> https://tableau-mini.vercel.app -> then save.
+  This adds tableau-mini to your safe extensions list.
+
+To Start the dashboard
+* Move to Home -> New -> Workbook
+* On the top panel select Dashboard -> new Dashboard
+* In the sidebar, select the object tab -> Extensions -> On the left "Add local extentions"
+* Click on the .trex file.
+Your Good to go !!
 
 This project can also be run locally for both server and client components. __Steps provided above.__
 
