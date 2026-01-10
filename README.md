@@ -32,12 +32,12 @@
   <p align="center">
     A Semantic Data ingestion extension for Tableau 
     <br />
-    <a href="https://github.com/Max-labs/Tableau Mini"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/Olutoye-lab/Tableau-Mini"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/Max-labs/Tableau Mini">View Demo</a>
+    <a href="https://github.com/Olutoye-lab/Tableau-Mini">View Demo</a>
     &middot;
-    <a href="https://github.com/Max-labs/Tableau Mini/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    <a href="https://github.com/Olutoye-lab/Tableau-Mini/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
   </p>
 </div>
 
@@ -74,7 +74,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Tableau Mini dashboard][product-screenshot]](https://example.com)
+<img src="assets\Product-image.png" alt="Tableau Dashboard" width="700" height="400">
 
 This is a project acting as the server side component for the Tableau Mini extension. 
 
@@ -308,7 +308,7 @@ Thank you to the Tableau Hackathon team for providing a platform to build skill 
 [license-url]: https://github.com/Olutoye-lab/Tableau-Mini/blob/master/LICENSE.txt
 [-shield]: https://img.shields.io/badge/--black.svg?style=for-the-badge&logo=&colorB=555
 [-url]: https://.com/in/Olutoye-lab
-[product-screenshot]: assets/logo.jpeg
+[product-screenshot]: assets/product-image.png
 <!-- Shields.io badges. You can a comprehensive list with many more badges at: https://github.com/inttter/md-badges -->
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Next-url]: https://nextjs.org/
