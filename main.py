@@ -21,6 +21,14 @@ app = FastAPI()
 
 load_dotenv()
 
+@app.middleware("http")
+async def set_scheme_to_https(request: Request, call_next):
+    # This tells FastAPI to treat the request as HTTPS
+    # which prevents it from generating 'http' redirects
+    request.scope['scheme'] = 'https'
+    response = await call_next(request)
+    return response
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -198,4 +206,4 @@ def root():
 
 if __name__  == "__main__":
     port = int(os.getenv("PORT", 10000))
-    uvicorn.run(app=app, host="0.0.0.0", port=port)
+    uvicorn.run(app=app, host="0.0.0.0", port=port, proxy_headers=True, forwarded_allow_ips="*")
