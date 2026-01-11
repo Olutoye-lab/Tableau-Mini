@@ -113,11 +113,13 @@ class WeightedConfidenceCalculator:
 
         final_score = total_weighted_score / total_weight
 
+        final_score = round(float(final_score), 2)
+
         # Avoid division by zero
         if total_weight == 0:
             self.event_data["score"] = 0,
             return self.event_data
                 
-        self.event_data["score"] = round(float(final_score), 2)
+        self.event_data["score"] = final_score
         return self.event_data, self.report_log, formated_column_scores, self.null_score, final_score, 
 
