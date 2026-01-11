@@ -20,6 +20,17 @@ import uvicorn
 app = FastAPI()
 
 load_dotenv()
+
+public_url = os.getenv("PUBLIC_URL", "*")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[public_url],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 sessions: Dict[str, dict] = {}
 
 redis_url = os.getenv("REDIS_URL") or ""
