@@ -29,9 +29,14 @@ async def set_scheme_to_https(request: Request, call_next):
     response = await call_next(request)
     return response
 
+origins = [
+    "https://tableau-mini.vercel.app",
+    "https://tableau-mini.vercel.app/",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
