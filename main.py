@@ -21,11 +21,9 @@ app = FastAPI()
 
 load_dotenv()
 
-public_url = os.getenv("PUBLIC_URL", "*")
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[public_url],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
