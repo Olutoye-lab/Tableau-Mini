@@ -32,12 +32,12 @@
   <p align="center">
     A Semantic Data ingestion extension for Tableau 
     <br />
-    <a href="https://github.com/Max-labs/Tableau Mini"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/Olutoye-lab/Tableau-Mini"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/Max-labs/Tableau Mini">View Demo</a>
+    <a href="https://github.com/Olutoye-lab/Tableau-Mini">View Demo</a>
     &middot;
-    <a href="https://github.com/Max-labs/Tableau Mini/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    <a href="https://github.com/Olutoye-lab/Tableau-Mini/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
   </p>
 </div>
 
@@ -74,7 +74,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Tableau Mini dashboard][product-screenshot]](https://example.com)
+<img src="assets\Product-image.png" alt="Tableau Dashboard" width="700" height="400">
 
 This is a project acting as the server side component for the Tableau Mini extension. 
 
@@ -221,13 +221,20 @@ REDIS_URL
 
 <!-- USAGE EXAMPLES -->
 ## Usage
+* Download the .trex file here: [Download Tableau Mini Extension](https://github.com/Olutoye-lab/Tableau-Mini-Main/releases/latest/download/ext_tableau_mini.trex)
 
-This project can be demoed on Tableau through the Tableau through the extension Market Place. [Extensions Market Place][tableau-extensions-api]
-- Install the Extension
-- Open the Dashboad
-- Move to the pannel
-- Select a sample dataset
-- Enter tableau Credentials and Start!!
+
+To add Mini extenstion in your Tableau Cloud. 
+* Go to Settings -> Extensions -> Extenstion Url
+* Add Url -> https://tableau-mini.vercel.app -> then save.
+  This adds tableau-mini to your safe extensions list.
+
+To Start the dashboard
+* Move to Home -> New -> Workbook
+* On the top panel select Dashboard -> new Dashboard
+* In the sidebar, select the object tab -> Extensions -> On the left "Add local extentions"
+* Click on the .trex file.
+Your Good to go !!
 
 This project can also be run locally for both server and client components. __Steps provided above.__
 
@@ -308,7 +315,7 @@ Thank you to the Tableau Hackathon team for providing a platform to build skill 
 [license-url]: https://github.com/Olutoye-lab/Tableau-Mini/blob/master/LICENSE.txt
 [-shield]: https://img.shields.io/badge/--black.svg?style=for-the-badge&logo=&colorB=555
 [-url]: https://.com/in/Olutoye-lab
-[product-screenshot]: assets/logo.jpeg
+[product-screenshot]: assets/product-image.png
 <!-- Shields.io badges. You can a comprehensive list with many more badges at: https://github.com/inttter/md-badges -->
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Next-url]: https://nextjs.org/
