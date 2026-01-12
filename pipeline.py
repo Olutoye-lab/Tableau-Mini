@@ -10,11 +10,13 @@ from ExecutionEngine.PublishTableau import TableauCloudPublisher
 from sse_manager import event_manager
 from salesforce_auth_manager import StorageManager
 import pandas as pd
+import numpy as np
 import json
 import asyncio 
 import tempfile
 import random
 from datetime import datetime
+from collections import defaultdict
 
 
 async def run_pipeline(payload, user_id):
@@ -62,7 +64,19 @@ async def run_pipeline(payload, user_id):
 
 async def run_execution_engine(user_id, ontology, df, table_profile, credentials, total_logs):
 
+    df = df.replace('null', np.nan)
+    df = df.convert_dtypes()
+
     weights = {}
+    deducted_points = defaultdict(int)
+
+    for log in total_logs:
+        if (log["status"] == "critical"):
+            deducted_points[log["column"]] -= 20
+        elif log["status"] == "warning":
+            deducted_points[log["column"]] -= 10
+        else:
+            deducted_points[log["column"]] = 0
 
     for items in ontology["required_fields"]:
         weights[items[0]] = items[1]
@@ -74,7 +88,7 @@ async def run_execution_engine(user_id, ontology, df, table_profile, credentials
         calculator.check_uniqueness(col, is_primary_key=table_profile[col]["is_likely_id"])
         null = calculator.check_nulls(col)
 
-    report_data, logs, formated_column_scores, null_score, final_score = await asyncio.to_thread(calculator.calculate_weighted_score)
+    report_data, logs, formated_column_scores, null_score, final_score = await asyncio.to_thread(calculator.calculate_weighted_score, deducted_points)
     
     metadata = {
         "column_scores": formated_column_scores,

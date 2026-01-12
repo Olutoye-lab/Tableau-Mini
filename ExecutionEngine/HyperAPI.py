@@ -3,7 +3,6 @@ import tempfile
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
-import numpy as np
 
 from sse_manager import event_manager
 
@@ -33,8 +32,6 @@ class HyperParquetIngestor:
 
     def generate_file(self, df: pd.DataFrame, table_name: str = "Extract"):
 
-        df = df.replace('null', np.nan)
-        df = df.convert_dtypes()
 
         # Create a named temporary file that closes automatically but isn't deleted immediately
         # We need it to persist so Hyper can read it, then we delete it manually.

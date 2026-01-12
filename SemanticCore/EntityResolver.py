@@ -77,7 +77,7 @@ class EntityResolver:
                             "column": col_name,
                             "type": "Inconsistent Cell Namming",
                             "message": f"Cell '{value}', has found to have an inconsistent naming schema. It has been replace with {key}'. Please validate with your team on consitent naming conventions!! ",
-                            "status": "Critical"
+                            "status": "critical"
                         })
                     formatted_results.update(dict(map(lambda x: (x, key), dirty_values)))
             

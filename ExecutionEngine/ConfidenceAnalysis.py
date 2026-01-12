@@ -40,7 +40,6 @@ class WeightedConfidenceCalculator:
             self.column_scores[column] -= percent_null
             self.column_scores[column] = max(0, self.column_scores[column]) # Cap at 0
             
-            self.report_log.append(f"[{column}] Penalized {percent_null:.1f} pts for nulls.")
 
     def check_uniqueness(self, column: str, is_primary_key: bool = False):
         """
@@ -71,7 +70,7 @@ class WeightedConfidenceCalculator:
                 "status": "critical"
                 })
 
-    def calculate_weighted_score(self):
+    def calculate_weighted_score(self, deducted_points):
         """
         Aggregates individual column scores into one final 'Business Trust Score'.
         Formula: Sum(Score * Weight) / Sum(Weights)
@@ -79,6 +78,14 @@ class WeightedConfidenceCalculator:
         total_weighted_score = 0
         total_weight = 0
         self.event_data["fields"] = []
+        
+        for log in self.report_log:
+            if (log["status"] == "critical"):
+                deducted_points[log["column"]] -= 20
+            elif log["status"] == "warning":
+                deducted_points[log["column"]] -= 10
+            else:
+                deducted_points[log["column"]] = 0
 
 
         print(f"{'Column':<15} | {'Raw Score':<10} | {'Weight':<8} | {'Contribution'}")
@@ -87,6 +94,10 @@ class WeightedConfidenceCalculator:
         formated_column_scores = []
 
         for col, raw_score in self.column_scores.items():
+
+            raw_score = raw_score - deducted_points[col] or 0
+
+
             # Get weight (default to 1.0 if not defined)
             weight = self.weights.get(col, 1.0)
             
