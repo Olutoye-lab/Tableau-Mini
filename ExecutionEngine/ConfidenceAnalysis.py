@@ -3,7 +3,7 @@ import pandas as pd
 import uuid
 
 class WeightedConfidenceCalculator:
-    def __init__(self, user_id, df: pd.DataFrame, weights: dict):
+    def __init__(self, user_id, df: pd.DataFrame, weights: dict, deducted_points: dict):
         """
         df: The dataframe to check.
         weights: A dictionary defining importance. 
@@ -13,6 +13,7 @@ class WeightedConfidenceCalculator:
         self.user_id = user_id
         self.df = df
         self.weights = weights
+        self.deducted_points = deducted_points
         self.null_score = [0, 0] # [7, 10] means 7/10 columns has at least 1 null value
         self.event_data = {} # For User SSE events
         self.report_log = [] # For dashboard reporting
@@ -70,7 +71,7 @@ class WeightedConfidenceCalculator:
                 "status": "critical"
                 })
 
-    def calculate_weighted_score(self, deducted_points):
+    def calculate_weighted_score(self):
         """
         Aggregates individual column scores into one final 'Business Trust Score'.
         Formula: Sum(Score * Weight) / Sum(Weights)
@@ -80,13 +81,19 @@ class WeightedConfidenceCalculator:
         self.event_data["fields"] = []
         
         for log in self.report_log:
+            print("-------------------------------------------")
+            print("LOG", log)
             if (log["status"] == "critical"):
-                deducted_points[log["column"]] -= 20
+                print(f"Log {log["column"]} = -20 ")
+                self.deducted_points[log["column"]] += 20
             elif log["status"] == "warning":
-                deducted_points[log["column"]] -= 10
-            else:
-                deducted_points[log["column"]] = 0
+                print(f"Log {log["column"]} = -10 ")
+                self.deducted_points[log["column"]] += 10
+            elif log["status"] == "info":
+                print(f"Log {log["column"]} = -0 ")
+                self.deducted_points[log["column"]] += 0
 
+        print("TOTAL DEDUCTED", self.deducted_points)
 
         print(f"{'Column':<15} | {'Raw Score':<10} | {'Weight':<8} | {'Contribution'}")
         print("-" * 55)
@@ -95,8 +102,13 @@ class WeightedConfidenceCalculator:
 
         for col, raw_score in self.column_scores.items():
 
-            raw_score = raw_score - deducted_points[col] or 0
+            print(f"COLUMN: {col}. Deducted score {self.deducted_points[col]}")
 
+            if (self.deducted_points[col] >= 100):
+                raw_score = 0
+            else:
+                raw_score = raw_score - self.deducted_points[col]
+            
 
             # Get weight (default to 1.0 if not defined)
             weight = self.weights.get(col, 1.0)

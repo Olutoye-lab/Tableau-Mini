@@ -71,24 +71,29 @@ async def run_execution_engine(user_id, ontology, df, table_profile, credentials
     deducted_points = defaultdict(int)
 
     for log in total_logs:
+        print("-------------------------------------------")
+        print("LOG", log)
         if (log["status"] == "critical"):
-            deducted_points[log["column"]] -= 20
+            print(f"Log {log["column"]} = 20 ")
+            deducted_points[log["column"]] += 20
         elif log["status"] == "warning":
-            deducted_points[log["column"]] -= 10
-        else:
-            deducted_points[log["column"]] = 0
-
+            print(f"Log {log["column"]} = -10 ")
+            deducted_points[log["column"]] += 10
+        elif log["status"] == "info":
+            print(f"Log {log["column"]} = -0 ")
+            deducted_points[log["column"]] += 0
+    
     for items in ontology["required_fields"]:
         weights[items[0]] = items[1]
 
-    calculator = WeightedConfidenceCalculator(user_id, df, weights)
+    calculator = WeightedConfidenceCalculator(user_id, df, weights, deducted_points)
 
     for col in df.columns:
         # Apply checks to relevant columns
         calculator.check_uniqueness(col, is_primary_key=table_profile[col]["is_likely_id"])
         null = calculator.check_nulls(col)
 
-    report_data, logs, formated_column_scores, null_score, final_score = await asyncio.to_thread(calculator.calculate_weighted_score, deducted_points)
+    report_data, logs, formated_column_scores, null_score, final_score = await asyncio.to_thread(calculator.calculate_weighted_score)
     
     metadata = {
         "column_scores": formated_column_scores,
@@ -97,8 +102,6 @@ async def run_execution_engine(user_id, ontology, df, table_profile, credentials
     }
 
     total_logs.extend(logs)
-
-    print("Total logs", total_logs)
 
     report_name = str(random.randrange(0, 1000)).ljust(4, "0")
 
