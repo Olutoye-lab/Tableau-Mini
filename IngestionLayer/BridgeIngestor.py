@@ -50,7 +50,10 @@ class BridgeIngestor:
 
     def _load_csv(self, csv_data):
         # 'low_memory=False' helps with mixed types in large files (common in dirty data)
-        return pd.read_csv(StringIO(csv_data), low_memory=False)
+        if type(csv_data) == list:
+            return pd.DataFrame(csv_data)
+        else: 
+            return pd.read_csv(StringIO(csv_data), low_memory=False)
 
     def _load_excel(self, excel_data):
         # Reads the first sheet by default. 

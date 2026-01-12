@@ -42,11 +42,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-sessions: Dict[str, dict] = {}
-
-redis_url = os.getenv("REDIS_URL") or ""
-redis_token = os.getenv("REDIS_TOKEN") or ""
-redis_client = Redis(url=redis_url, token=redis_token)
 
 # # uncomment this function when using test-see.py
 # # --- Test Pipeline Logic ---
@@ -122,79 +117,97 @@ async def event_stream(queue: asyncio.Queue):
 
 @app.post("/save")
 async def save(request: Request):
-    payload = await request.json()
 
-    user_id = payload["user_id"]
+    try:   
+        redis_url = os.getenv("REDIS_URL") or ""
+        redis_token = os.getenv("REDIS_TOKEN") or ""
+        redis_client = Redis(url=redis_url, token=redis_token)
 
-    if user_id == "":
-        user_id = str(uuid.uuid4())
+        payload = await request.json()
 
-    if (type(payload) == dict):
-        payload = json.dumps(payload)
+        user_id = payload["user_id"]
 
-    redis_client.set(user_id, payload)
-    
-    return {"user_id": user_id}
+        if user_id == "":
+            user_id = str(uuid.uuid4())
+
+        if (type(payload) == dict):
+            payload = json.dumps(payload)
+
+        redis_client.set(user_id, payload)
+        
+        return {"user_id": user_id}
+    except Exception as e:
+        print("Exception occured", e)
+        raise HTTPException(status_code=400, detail=str(e))
 
 @app.get("/events/{user_id}")
 async def sse(user_id: str):
-    print(f"\n{'='*60}")
-    print(f"[SSE ENDPOINT] New connection request for user_id: {user_id}")
-    print(f"{'='*60}\n")
-    
-    payload = redis_client.get(user_id)
 
-    if payload is None:
-        raise HTTPException(status_code=404, detail="User ID not found")
+    try:
+        print(f"\n{'='*60}")
+        print(f"[SSE ENDPOINT] New connection request for user_id: {user_id}")
+        print(f"{'='*60}\n")
+
+        redis_url = os.getenv("REDIS_URL") or ""
+        redis_token = os.getenv("REDIS_TOKEN") or ""
+        redis_client = Redis(url=redis_url, token=redis_token)
         
-    payload = json.loads(payload)
+        payload = redis_client.get(user_id)
 
-    # Connect queue first
-    queue = await event_manager.connect(user_id)
-    
-    # Send initial connection event through queue
-    await event_manager.publish(
-        user_id,
-        event_type="connected",
-        data=json.dumps({"user_id": user_id, "status": "connected"})
-    )
-    
-    # Start pipeline
-    asyncio.create_task(run_pipeline(payload, user_id))
-    
-    async def stream():
-        try:
-            print(f"[STREAM] Starting event loop for user {user_id}")
-            chunk_count = 0
+        if payload is None:
+            raise HTTPException(status_code=404, detail="User ID not found")
             
-            # This loop should run indefinitely until client disconnects
-            while True:
-                print(f"[STREAM] Waiting for next message from queue...")
-                message = await queue.get()
-                chunk_count += 1
-                print(f"[STREAM] Chunk #{chunk_count} received")
-                print(f"[STREAM] Content: {message[:100]}")
-                yield message
+        payload = json.loads(payload)
+
+        # Connect queue first
+        queue = await event_manager.connect(user_id)
+        
+        # Send initial connection event through queue
+        await event_manager.publish(
+            user_id,
+            event_type="connected",
+            data=json.dumps({"user_id": user_id, "status": "connected"})
+        )
+        
+        # Start pipeline
+        asyncio.create_task(run_pipeline(payload, user_id))
+        
+        async def stream():
+            try:
+                print(f"[STREAM] Starting event loop for user {user_id}")
+                chunk_count = 0
                 
-        except asyncio.CancelledError:
-            print(f"[STREAM] ⚠️  Client disconnected (CancelledError)")
-        except Exception as e:
-            print(f"[STREAM] ❌ Error: {e}")
-            import traceback
-            traceback.print_exc()
-        finally:
-            print(f"[STREAM] Cleanup: Disconnecting user {user_id}")
-            await event_manager.disconnect(user_id)
-    
-    return StreamingResponse(
-        stream(), 
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "X-Accel-Buffering": "no",
-        }
-    )
+                # This loop should run indefinitely until client disconnects
+                while True:
+                    print(f"[STREAM] Waiting for next message from queue...")
+                    message = await queue.get()
+                    chunk_count += 1
+                    print(f"[STREAM] Chunk #{chunk_count} received")
+                    print(f"[STREAM] Content: {message[:100]}")
+                    yield message
+                    
+            except asyncio.CancelledError:
+                print(f"[STREAM] ⚠️  Client disconnected (CancelledError)")
+            except Exception as e:
+                print(f"[STREAM] ❌ Error: {e}")
+                import traceback
+                traceback.print_exc()
+            finally:
+                print(f"[STREAM] Cleanup: Disconnecting user {user_id}")
+                await event_manager.disconnect(user_id)
+        
+        return StreamingResponse(
+            stream(), 
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "X-Accel-Buffering": "no",
+            }
+        )
+    except Exception as e:
+        print("Exception Occured", e)
+        raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/notify/{user_id}")
 async def notify(user_id: str, msg: str):
