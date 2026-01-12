@@ -127,16 +127,17 @@ class WeightedConfidenceCalculator:
             print(f"{col:<15} | {raw_score:<10.1f} | {weight:<8} | {weighted_val:.1f}")
 
         
-        if total_weight <= 40:
+        final_score = total_weighted_score / total_weight
+
+        final_score = round(float(final_score), 2)
+
+        if final_score <= 40:
             self.event_data["text"] = "It seems you data doesn't meet the quality threshold, please check the results and refrain from using this on heavy data analysis."
-        elif 40 < total_weight < 70:
+        elif 40 < final_score < 90:
             self.event_data["text"] = "Your data passes basic quality checks. However there maybe hidden logical issues within within your dataset, please check the results for further information."
         else:
             self.event_data["text"] = "Your dataset passes most quality checks and it optimal for data analysis."
 
-        final_score = total_weighted_score / total_weight
-
-        final_score = round(float(final_score), 2)
 
         # Avoid division by zero
         if total_weight == 0:
