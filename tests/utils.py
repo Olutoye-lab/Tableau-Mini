@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def build_test_payload(type, credentials={}, file_name="", connection_string="", table_name="", limit=0):
+def build_test_payload(type, file_name="", connection_string="", table_name="", limit=0):
     # --- types --- 
     # csv
     # json
@@ -26,7 +26,6 @@ def build_test_payload(type, credentials={}, file_name="", connection_string="",
     else:
         payload["data"] = connection_string
 
-    payload["credentials"] = credentials,
     payload["limit"] = limit
     payload["table_name"] = table_name
 

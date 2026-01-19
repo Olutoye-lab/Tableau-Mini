@@ -81,16 +81,11 @@ class WeightedConfidenceCalculator:
         self.event_data["fields"] = []
         
         for log in self.report_log:
-            print("-------------------------------------------")
-            print("LOG", log)
             if (log["status"] == "critical"):
-                print(f"Log {log["column"]} = -20 ")
                 self.deducted_points[log["column"]] += 20
             elif log["status"] == "warning":
-                print(f"Log {log["column"]} = -10 ")
                 self.deducted_points[log["column"]] += 10
             elif log["status"] == "info":
-                print(f"Log {log["column"]} = -0 ")
                 self.deducted_points[log["column"]] += 0
 
         print("TOTAL DEDUCTED", self.deducted_points)

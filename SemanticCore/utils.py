@@ -11,7 +11,6 @@ def get_ontology(department):
         with open(file="ontology/HumanResources.json") as hr:
             return hr
     else:
-        # Return an sse event signifying error in department name
         return
     
  

@@ -32,13 +32,6 @@ async def run_pipeline(payload, user_id):
     limit=None
     table_name=None
 
-    print("----------------------")
-    print(data_or_string)
-    print(dataType)
-    print(token)
-    print(token_name)
-
-
     if dataType.lower() == "string":
         limit = payload["limit"]
         table_name = payload["table_name"]
@@ -71,16 +64,11 @@ async def run_execution_engine(user_id, ontology, df, table_profile, credentials
     deducted_points = defaultdict(int)
 
     for log in total_logs:
-        print("-------------------------------------------")
-        print("LOG", log)
         if (log["status"] == "critical"):
-            print(f"Log {log["column"]} = 20 ")
             deducted_points[log["column"]] += 20
         elif log["status"] == "warning":
-            print(f"Log {log["column"]} = -10 ")
             deducted_points[log["column"]] += 10
         elif log["status"] == "info":
-            print(f"Log {log["column"]} = -0 ")
             deducted_points[log["column"]] += 0
     
     for items in ontology["required_fields"]:
@@ -102,6 +90,10 @@ async def run_execution_engine(user_id, ontology, df, table_profile, credentials
     }
 
     total_logs.extend(logs)
+
+    for log in total_logs:
+        print("---------------------") 
+        print(log)
 
     report_name = str(random.randrange(0, 1000)).ljust(4, "0")
 
@@ -142,7 +134,8 @@ async def run_execution_engine(user_id, ontology, df, table_profile, credentials
                 "id": 5,
                 "title": "Results",
                 "text": "Please view the main page for your results.",
-                "report" : report_data
+                "report" : report_data,
+                "data": df.to_dict('records')
             }
             await event_manager.publish(user_id, event_type="normal", data=json.dumps(event_data))
             
@@ -173,26 +166,42 @@ async def run_intelligence_pipeline(user_id, table_data):
         mapper.precompute_ontology(ontology_json=ontology)
 
         # Map ontology vector embeddings
-        updated_col_mappings, event_data, semantic_logs = await asyncio.to_thread(mapper.map_columns, raw_input=data)
-        logs.extend(semantic_logs)
+        updated_col_mappings, event_data = await asyncio.to_thread(mapper.map_columns, raw_input=data)
+        logs.extend(mapper.get_logs())
 
         await event_manager.publish(user_id, event_type="normal", data=json.dumps(event_data))
 
-        updated_col_names = list(updated_col_mappings.keys())
+        updated_col_names = {}
 
+        for key, value in updated_col_mappings.items():
+            if value["mapped_to"]:
+                updated_col_names[key] = value["mapped_to"]
+            else:
+                updated_col_names[key] = key
 
         updated_data_dict = {}
 
         col_index = 0
         for column_name, column_data in data.items():
+            print("Column Name", column_name)
+            print("column profile", table_profile[column_name])
 
-            if table_profile[column_name]["inferred_type"] == "String" and table_profile[column_name]["semantic_tag"] == "Categorical_Dimension":
-                updated_data_dict[updated_col_names[col_index]], resolver_logs = await asyncio.to_thread(data_resolver.resolve, series=pd.Series(column_data), col_name=updated_col_names[col_index])
-                logs.extend(resolver_logs)
+            if (table_profile[column_name]["inferred_type"] == "String") and (table_profile[column_name]["semantic_tag"] == "Categorical_Dimension"):
+                updated_data_dict[updated_col_names[column_name]] = await asyncio.to_thread(data_resolver.resolve, series=pd.Series(column_data), col_name=updated_col_names[column_name])
+            elif table_profile[column_name]["inferred_type"] == "Datetime" :
+                updated_data_dict[updated_col_names[column_name]] = await asyncio.to_thread(data_resolver.resolve_date, series=pd.Series(column_data), column=updated_col_names[column_name])
             else:
-                updated_data_dict[updated_col_names[col_index]] = column_data
-
+                updated_data_dict[updated_col_names[column_name]] = column_data
+            
+            prev_profile = table_profile[column_name]
+            del table_profile[column_name]
+            table_profile[updated_col_names[column_name]] = prev_profile
+                
             col_index += 1
+        
+        data_resolver.resolve_headers(data)
+
+        logs.extend(data_resolver.get_logs())
 
         updated_df = pd.DataFrame(updated_data_dict)
 
@@ -222,14 +231,12 @@ async def ingest_data(user_id, dataType, data_or_string: str, limit, table_name)
 
     # --- Meta data scanner ---
 
-    column_profiles = []
     scanner = MetadataScanner(user_id)
 
     profile, event_data = await asyncio.to_thread(scanner.scan, table)
-    column_profiles.append(profile)
 
     await event_manager.publish(user_id, event_type="normal", data=json.dumps(event_data))
 
-    return zip(column_profiles, [table])
+    return zip([profile], [table])
 
     

@@ -21,6 +21,9 @@ class SemanticMapper:
         self.threshold = threshold
         self.report_log = []
     
+    def get_logs(self):
+        return self.report_log
+    
     def precompute_ontology(self, ontology_json):
         """
         Step 1: Precompute Ontology Embeddings.
@@ -102,8 +105,6 @@ class SemanticMapper:
                     "status": "warning"
                 })
                 
-                
-        
         jsn = []
         for key, value in mapping_result.items():
             dct = {"column_name": key}
@@ -120,5 +121,5 @@ class SemanticMapper:
             "table": jsn
         }
                 
-        return mapping_result, event_data, self.report_log
+        return mapping_result, event_data
     

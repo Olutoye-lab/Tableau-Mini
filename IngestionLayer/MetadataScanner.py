@@ -1,5 +1,5 @@
 import pandas as pd
-import json
+import numpy as np
 from dateutil.parser import parse
 from sse_manager import event_manager
 
@@ -25,8 +25,8 @@ class MetadataScanner:
             unique_count = df[col].nunique()
             
             # Calculate Ratios for the Logic Engine
-            unique_ratio = unique_count / total_rows if total_rows > 0 else 0
-            null_ratio = null_count / total_rows if total_rows > 0 else 0
+            unique_ratio = float(unique_count / total_rows) if total_rows > 0 else 0
+            null_ratio = float(null_count / total_rows) if total_rows > 0 else 0
             
             # 2. Sample the data for expensive checks (Regex/Parsing)
             # We use 'head(1000)' so we don't slow down on massive files
@@ -67,62 +67,101 @@ class MetadataScanner:
             self.data_count += 1
             
         return profile, event_data
-
+    
     def _determine_type_and_tag(self, series, unique_ratio, null_ratio):
-        """
-        Determines the specific Inferred Type and Semantic Tag based on 
-        Security, Structure, and Content analysis.
-        """
-        if series.empty:
-            return "Unknown", "Empty"
+            """
+            Optimized type inference using sampling and thresholds.
+            """
+            if series.empty:
+                return "Unknown", "Empty"
 
-        # --- LEVEL 1: SECURITY CHECKS (Highest Priority) ---
-        # Check for Credit Card Numbers (Simple Regex for 16 digits)
-        if series.astype(str).str.contains(r'^\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}$').any():
-            return "String", "PII_Financial_Sensitive"
+            # --- PRE-CLEANING ---
+            # 1. Replace literal "null" strings with actual NaN so they are dropped
+            # This fixes the "unable to parse: null" error
+            series_cleaned = series.replace(
+                ['null', 'NULL', 'Null', 'nan', 'NaN'], np.nan
+            )
+            
+            # 2. Create non-null sample
+            sample_size = 1000
+            series_dropped = series_cleaned.dropna()
+            
+            if len(series_dropped) > sample_size:
+                sample = series_dropped.sample(n=sample_size, random_state=42)
+            else:
+                sample = series_dropped
 
-        # Check for Emails
-        if series.astype(str).str.contains(r'^[\w\.-]+@[\w\.-]+\.\w+$').any():
-            return "String", "PII_Contact_Email"
+            if len(sample) == 0:
+                return "Unknown", "Empty"
 
-        # Check for US Social Security Numbers
-        if series.astype(str).str.contains(r'^\d{3}-\d{2}-\d{4}$').any():
-            return "String", "PII_Government_ID"
+            # Convert sample to string once for regex operations
+            sample_str = sample.astype(str)
 
-        # --- LEVEL 2: STRUCTURAL CHECKS (Relational Logic) ---
-        # Check for Boolean Flags (Low Cardinality + Specific Values)
-        if series.nunique() <= 2:
-             sample_values = set(series.astype(str).unique())
-             # Clean up the set to ensure we match correctly
-             clean_values = {v.lower() for v in sample_values}
-             if clean_values.issubset({'y', 'n', 'true', 'false', '0', '1', 't', 'f'}):
-                 return "Boolean", "Logic_Flag"
+            # --- LEVEL 1: SECURITY CHECKS (Keep as is) ---
+            if sample_str.str.contains(r'^\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}$').mean() > 0.1:
+                return "String", "PII_Financial_Sensitive"
+            if sample_str.str.contains(r'^[\w\.-]+@[\w\.-]+\.\w+$').mean() > 0.1:
+                return "String", "PII_Contact_Email"
 
-        # Check for Primary Keys (100% Unique, No Nulls)
-        # Note: We rely on the GLOBAL ratios passed in, not the sample
-        if unique_ratio == 1.0 and null_ratio == 0.0:
-            if pd.api.types.is_integer_dtype(series):
-                return "Integer", "Primary_Key"
-            # Heuristic: Long unique strings (avg len > 10) are usually UUIDs
-            elif series.astype(str).str.len().mean() > 8: 
-                return "String", "UUID_Key"
+            # --- LEVEL 2: STRUCTURAL CHECKS (Keep as is) ---
+            if series.nunique(dropna=True) <= 2:
+                unique_vals = set(series_dropped.unique().astype(str))
+                clean_values = {v.lower() for v in unique_vals}
+                if clean_values.issubset({'y', 'n', 'true', 'false', '0', '1', 't', 'f', 'yes', 'no'}):
+                    return "Boolean", "Logic_Flag"
 
-        # --- LEVEL 3: CONTENT CHECKS (Standard Types) ---
-        # Check for Dates
-        try:
-            series.apply(lambda x: parse(x) if pd.notna(x) else pd.NaT)
-            return "Datetime", "Time_Dimension"
-        except:
-            pass
+            if unique_ratio == 1.0 and null_ratio == 0.0:
+                if pd.api.types.is_integer_dtype(series):
+                    return "Integer", "Primary_Key"
+                elif sample_str.str.len().mean() > 20: 
+                    return "String", "UUID_Key"
 
-        # Check for Numeric Measures
-        try:
-            # Clean currency symbols before checking
-            clean_series = series.astype(str).str.replace(r'[$,]', '', regex=True)
-            pd.to_numeric(clean_series)
-            return "Numeric", "Measure"
-        except:
-            pass
+            # --- LEVEL 3: CONTENT CHECKS ---
+            
+            # 1. CHECK FOR NUMERICS (Integers & Floats)
+            # Check native types first
+            if pd.api.types.is_numeric_dtype(series):
+                if pd.api.types.is_integer_dtype(series):
+                    return "Integer", "Measure"
+                else:
+                    return "Decimal", "Measure"
+            
+            # Check string-encoded numerics
+            try:
+                clean_sample = sample_str.str.replace(r'[$,]', '', regex=True)
+                converted_num = pd.to_numeric(clean_sample, errors='coerce')
+                
+                if converted_num.notna().mean() > 0.8:
+                    valid_nums = converted_num.dropna()
+                    if (valid_nums % 1 == 0).all():
+                        return "Integer", "Measure"
+                    else:
+                        return "Decimal", "Measure"
+            except:
+                pass
 
-        # --- FALLBACK ---
-        return "String", "Categorical_Dimension"
+            # 2. CHECK FOR DATES (Robust Version)
+            try:
+                # FIX 1: Use errors='coerce' to turn unparseable strings (like noise) into NaT
+                # FIX 2: Use dayfirst=True for "17/02/25"
+                # FIX 3: Use format='mixed' for "07-Nov-25" and "2025-07-20" together
+                converted_date = pd.to_datetime(
+                    sample, 
+                    errors='coerce', 
+                    dayfirst=True, 
+                    format='mixed'
+                )
+                
+                # Check success rate
+                if converted_date.notna().mean() > 0.8: 
+                    # Sanity check for "Fake Dates" (Numbers treated as timestamps)
+                    valid_dates = converted_date[converted_date.notna()]
+                    if valid_dates.dt.year.min() < 1980:
+                        return "Integer", "Measure" 
+                    
+                    return "Datetime", "Time_Dimension"
+            except:
+                pass
+
+            # --- FALLBACK ---
+            return "String", "Categorical_Dimension"
