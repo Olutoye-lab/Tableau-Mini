@@ -123,6 +123,12 @@ async def run_execution_engine(user_id, ontology, df, table_profile, credentials
         print(f"[3/3] Attempting upload to Project: '{target_project}'...")
         
         try:
+            str_cols = df.select_dtypes(include=["object", "string"]).columns
+            df[str_cols] = df[str_cols].fillna("")
+
+            num_cols = df.select_dtypes(include=["number"]).columns
+            df[num_cols] = df[num_cols].fillna(0)
+            
             await asyncio.to_thread(publisher.publish, 
                 file_path=hyper_file_path, 
                 project_name=target_project, 
