@@ -6,7 +6,7 @@ import uuid
 
 
 class SemanticMapper:
-    def __init__(self,user_id, model_name='all-MiniLM-L6-v2', threshold=0.6):
+    def __init__(self,user_id, model_name='all-MiniLM-L6-v2', threshold=0.5):
         """
         Initializes the Mapper with a lightweight, high-speed embedding model.
         Args:

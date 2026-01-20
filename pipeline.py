@@ -124,7 +124,7 @@ async def run_execution_engine(user_id, ontology, df, table_profile, credentials
         
         try:
             str_cols = df.select_dtypes(include=["object", "string"]).columns
-            df[str_cols] = df[str_cols].fillna("")
+            df[str_cols] = df[str_cols].fillna("Null")
 
             num_cols = df.select_dtypes(include=["number"]).columns
             df[num_cols] = df[num_cols].fillna(0)
@@ -210,6 +210,12 @@ async def run_intelligence_pipeline(user_id, table_data):
         logs.extend(data_resolver.get_logs())
 
         updated_df = pd.DataFrame(updated_data_dict)
+
+        str_cols = updated_df.select_dtypes(include=["object", "string"]).columns
+        updated_df[str_cols] = updated_df[str_cols].fillna("Null")
+
+        num_cols = updated_df.select_dtypes(include=["number"]).columns
+        updated_df[num_cols] = updated_df[num_cols].fillna(0)
 
         event_data ={
             "id": 4,
