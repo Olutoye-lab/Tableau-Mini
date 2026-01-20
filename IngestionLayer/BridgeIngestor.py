@@ -31,8 +31,17 @@ class BridgeIngestor:
         elif dataType == 'json':
             print(f"--> Detecting JSON File...")
             df = self._load_json(data_or_string)
+    
         
         if df is not None:
+            str_cols = df.select_dtypes(include=["object", "string"]).columns
+            df[str_cols] = df[str_cols].fillna("null")
+
+            num_cols = df.select_dtypes(include=["number"]).columns
+            df[num_cols] = df[num_cols].fillna(0)
+
+            print(df.head(10))
+
             event_data: dict[str, Any] ={
                 "id": 0,
                 "title": "Ingestion Data",
@@ -57,7 +66,10 @@ class BridgeIngestor:
 
     def _load_excel(self, excel_data):
         # Reads the first sheet by default. 
-        return pd.read_excel(BytesIO(excel_data), engine='openpyxl')
+        if type(excel_data) == list:
+            return pd.DataFrame(excel_data)
+        else: 
+            return pd.read_excel(BytesIO(excel_data), engine='openpyxl')
 
     def _load_json(self, json_data):
         # 'orient' depends on structure, but 'records' is common for API dumps

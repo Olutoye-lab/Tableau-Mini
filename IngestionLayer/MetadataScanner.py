@@ -15,6 +15,14 @@ class MetadataScanner:
         Input: Raw Pandas DataFrame
         Output: A dictionary 'Profile' summarizing every column.
         """
+        str_cols = df.select_dtypes(include=["object", "string"]).columns
+        df[str_cols] = df[str_cols].fillna("null")
+
+        num_cols = df.select_dtypes(include=["number"]).columns
+        df[num_cols] = df[num_cols].fillna(0)
+
+        print(df.head(10))
+
         profile = {}
         event_data = {}
 

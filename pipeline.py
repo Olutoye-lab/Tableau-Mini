@@ -157,7 +157,9 @@ async def run_intelligence_pipeline(user_id, table_data):
     # ----- INTENT DECODER ---- 
     for table_profile, data in table_data:
 
-        print("TABLE PROFILE", table_profile)
+        print("------- TABLE PROFILE --------")
+        for key, value in table_profile.items():
+            print(key, value)
         # table_profile: metadata on the columns
         # data: Dataframe of full data
 
@@ -212,7 +214,7 @@ async def run_intelligence_pipeline(user_id, table_data):
         updated_df = pd.DataFrame(updated_data_dict)
 
         str_cols = updated_df.select_dtypes(include=["object", "string"]).columns
-        updated_df[str_cols] = updated_df[str_cols].fillna("Null")
+        updated_df[str_cols] = updated_df[str_cols].fillna("null")
 
         num_cols = updated_df.select_dtypes(include=["number"]).columns
         updated_df[num_cols] = updated_df[num_cols].fillna(0)
