@@ -34,7 +34,7 @@
 #     }
 
 #     # 2. Init Mapper
-#     mapper = SemanticMapper(threshold=0.6)
+#     mapper = SemanticMapper(threshold=0.6, user_id="")
 #     mapper.precompute_ontology(finance_ontology)
 
 #     # 3. Create a Dummy Pandas DataFrame (Simulating a file load)
@@ -48,7 +48,7 @@
 
 #     # 4. Pass the WHOLE DataFrame to the mapper
 #     # The class now handles extracting 'df_raw.columns' automatically
-#     results = asyncio.run(mapper.map_columns(df_raw))
+#     results, event_data = asyncio.run(mapper.map_columns(df_raw))
 
 #     # 5. Display Output
 #     print("\n--- Mapping Results ---")
