@@ -6,7 +6,7 @@ import uuid
 
 
 class SemanticMapper:
-    def __init__(self,user_id, model_name='all-MiniLM-L6-v2', model_path="./my_model_files", threshold=0.5):
+    def __init__(self,user_id, model_name="sentence-transformers/all-MiniLM-L6-v2", threshold=0.5):
         """
         Initializes the Mapper with a lightweight, high-speed embedding model.
         Args:
@@ -15,7 +15,7 @@ class SemanticMapper:
         """
         print(f"Loading Intelligence Core: {model_name}...")
         self.user_id = user_id
-        self.model = SentenceTransformer(model_path)
+        self.model = SentenceTransformer(model_name)
         self.index = None  # The FAISS Vector Database
         self.ontology_fields = [] 
         self.threshold = threshold
