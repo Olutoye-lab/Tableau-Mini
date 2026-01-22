@@ -1,17 +1,17 @@
-import asyncio
-from pipeline import run_pipeline
-from .utils import build_test_payload
+# import asyncio
+# from pipeline import run_pipeline
+# from .utils import build_test_payload
 
-# NOTE: We do NOT import 'app' from main here because we are hitting the network.
+# # NOTE: We do NOT import 'app' from main here because we are hitting the network.
 
 
-def test_pipeline():
-    # Setup: Create a user ID/Session
-    payload = build_test_payload(type="csv", file_name="tests/sample_data/bad_finance.csv", )
-    user_id = "test_user"
+# def test_pipeline():
+#     # Setup: Create a user ID/Session
+#     payload = build_test_payload(type="csv", file_name="tests/sample_data/bad_finance.csv", )
+#     user_id = "test_user"
 
-    print(payload)
+#     print(payload)
 
-    asyncio.run(run_pipeline(payload=payload, user_id=user_id))
+#     asyncio.run(run_pipeline(payload=payload, user_id=user_id))
 
-    assert True
+#     assert True

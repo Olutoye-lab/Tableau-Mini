@@ -15,7 +15,7 @@ class SemanticMapper:
         """
         print(f"Loading Intelligence Core: {model_name}...")
         self.user_id = user_id
-        self.model = SentenceTransformer(model_name)
+        self.model = SentenceTransformer(model_name, local_files_only=True)
         self.index = None  # The FAISS Vector Database
         self.ontology_fields = [] 
         self.threshold = threshold
