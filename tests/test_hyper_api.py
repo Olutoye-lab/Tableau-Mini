@@ -1,38 +1,39 @@
-# import pytest
-# import pytest_asyncio
-# import pandas as pd
-# import os
-# from datetime import datetime
+import pytest
+import tempfile
+import pytest_asyncio
+import pandas as pd
+import os
+from datetime import datetime
 
-# from tableauhyperapi import HyperProcess, Connection, Telemetry, TableName
+from tableauhyperapi import HyperProcess, Connection, Telemetry, TableName
 
-# # --- IMPORT YOUR CLASS HERE ---
-# from ExecutionEngine.HyperAPI import HyperParquetIngestor 
-# from ExecutionEngine.PublishTableau import TableauCloudPublisher
+# --- IMPORT YOUR CLASS HERE ---
+from ExecutionEngine.HyperAPI import HyperParquetIngestor 
+from ExecutionEngine.PublishTableau import TableauCloudPublisher
 
 # ==========================================
 # 1. FIXTURES
 # ==========================================
 
-# @pytest_asyncio.fixture
-# async def hyper_file_path(tmp_path) -> str:
-#     """
-#     Uses PyTest's native 'tmp_path' fixture. 
-#     It creates a unique temporary directory for each test and 
-#     automatically deletes it after the test finishes.
-#     """
-#     # Create a full path string inside the temp directory
-#     return str(tmp_path / "test_output.hyper")
+@pytest_asyncio.fixture
+async def hyper_file_path(tmp_path) -> str:
+    """
+    Uses PyTest's native 'tmp_path' fixture. 
+    It creates a unique temporary directory for each test and 
+    automatically deletes it after the test finishes.
+    """
+    # Create a full path string inside the temp directory
+    return str(tmp_path / "test_output.hyper")
 
-# @pytest_asyncio.fixture
-# async def sample_df():
-#     """Creates a standard dataframe for testing."""
-#     return pd.DataFrame({
-#         'Transaction_ID': [1, 2, 3],
-#         'Revenue': [100.50, 200.00, 300.25],
-#         'Is_Valid': [True, False, True],
-#         'Category': ['A', 'B', 'A']
-#     })
+@pytest_asyncio.fixture
+async def sample_df():
+    """Creates a standard dataframe for testing."""
+    return pd.DataFrame({
+        'Transaction_ID': [1, 2, 3],
+        'Revenue': [100.50, 200.00, 300.25],
+        'Is_Valid': [True, False, True],
+        'Category': ['A', 'B', 'A']
+    })
 
 # ==========================================
 # 2. THE TESTS
@@ -116,7 +117,7 @@
 #             assert 'BOOL' in str(col.type).upper(), f"Column mapped incorrectly. Got: {col.type}"
 
 # @pytest.mark.asyncio
-# async def test_live_publish_to_cloud(hyper_file_path, sample_df):
+# async def test_live_publish_to_cloud(sample_df):
 #     """
 #     REAL WORLD TEST: Generates a file and attempts to actually upload it 
 #     to Tableau Cloud. Requires valid ENV variables.
@@ -137,35 +138,39 @@
 #     if not all([server_url, site_name, token, token_name]):
 #         pytest.skip("Skipping live test: Missing environment variables.")
 
-#     # 2. Funnel: Generate the real Hyper file
-#     print(f"\n[1/3] Generating temp file at: {hyper_file_path}")
-#     ingestor = HyperParquetIngestor(hyper_file_path=hyper_file_path, user_id="",)
-#     await ingestor.generate_file(sample_df, "Integration_Test_Table")
-    
-#     assert os.path.exists(hyper_file_path), "Failed to generate temp file."
+#     with tempfile.TemporaryDirectory() as temp_dir:
 
-#     # 3. Initialize Real Publisher
-#     print(f"[2/3] Connecting to real server: {server_url}")
-#     publisher = TableauCloudPublisher(
-#         user_id="",
-#         server_url=server_url, 
-#         site_name=site_name, 
-#         token=token,
-#         token_name=token_name
-#     )
+#         hyper_file_path = temp_dir + "/test_output.hyper"
 
-#     # 4. Execute Publish
-#     #    If this fails, it will raise an Exception and fail the test automatically.
-#     print(f"[3/3] Attempting upload to Project: '{target_project}'...")
-    
-#     try:
-#         await publisher.publish(
-#             file_path=hyper_file_path, 
-#             project_name=target_project, 
-#             datasource_name=target_datasource,
-#             certify=True
+#         # 2. Funnel: Generate the real Hyper file
+#         print(f"\n[1/3] Generating temp file at: {hyper_file_path}")
+#         ingestor = HyperParquetIngestor(hyper_file_path=hyper_file_path, user_id="",)
+#         ingestor.generate_file(sample_df, "Integration_Test_Table")
+        
+#         assert os.path.exists(hyper_file_path), "Failed to generate temp file."
+
+#         # 3. Initialize Real Publisher
+#         print(f"[2/3] Connecting to real server: {server_url}")
+#         publisher = TableauCloudPublisher(
+#             user_id="",
+#             server_url=server_url, 
+#             site_name=site_name, 
+#             token=token,
+#             token_name=token_name
 #         )
-#     except Exception as e:
-#         pytest.fail(f"Live Publish Failed: {e}")
+
+#         # 4. Execute Publish
+#         #    If this fails, it will raise an Exception and fail the test automatically.
+#         print(f"[3/3] Attempting upload to Project: '{target_project}'...")
+        
+#         try:
+#             publisher.publish(
+#                 file_path=hyper_file_path, 
+#                 project_name=target_project, 
+#                 datasource_name=target_datasource,
+#                 certify=True
+#             )
+#         except Exception as e:
+#             pytest.fail(f"Live Publish Failed: {e}")
 
 #     print("\n✅ Live publish test completed successfully.")
